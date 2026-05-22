@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detailed Element Info - NVDA Add-on</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Detailed Element Info</h1>
+        <p>A powerful NVDA add-on that provides detailed accessibility information about HTML elements on web pages.</p>
+
+        <h2>Overview</h2>
+        <p>Detailed Element Info is a utility add-on for NVDA that allows you to inspect HTML elements and view their accessibility attributes, ARIA roles, and semantic information. This is particularly useful for web developers, accessibility auditors, and NVDA users who want to understand how screen readers perceive web content.</p>
+
+        <h2>Features</h2>
+        <ul>
+            <li><strong>Display ARIA Roles:</strong> See the computed ARIA role of any HTML element</li>
+            <li><strong>Show Accessible Names:</strong> View the accessible name and its source (aria-label, alt text, content, etc.)</li>
+            <li><strong>Detect Semantic Mismatches:</strong> Identify when explicit ARIA roles conflict with native HTML semantics</li>
+            <li><strong>Inspect Attributes:</strong> View all IA2 attributes and ARIA properties</li>
+            <li><strong>Show DOM Path:</strong> See a concise DOM path for the focused element</li>
+            <li><strong>Parent Navigation:</strong> Navigate through parent elements to understand document structure</li>
+            <li><strong>State Tracking:</strong> View element states (expanded, checked, selected, etc.) as ARIA attributes</li>
+            <li><strong>Source Detection:</strong> Understand where accessible names come from (aria-label, contents, alt, title, etc.)</li>
+        </ul>
+
+        <h2>Keyboard Shortcuts</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Shortcut</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="kbd">NVDA+Shift+F1</span></td>
+                    <td>Show focused element details</td>
+                </tr>
+            </tbody>
+        </table>
+        <p><strong>Note:</strong> You can change this shortcut from <strong>Preferences &gt; Input Gestures</strong> in NVDA.</p>
+
+        <h2>How to Use</h2>
+        <ol>
+            <li>Navigate to any HTML element on a web page using Tab key or arrow keys</li>
+            <li>Press <span class="kbd">NVDA+Shift+F1</span> to show focused element details</li>
+            <li>A browseable message window will open showing:
+                <ul>
+                    <li>Element tag name and attribute count</li>
+                    <li>Accessible name and its source</li>
+                    <li>Computed ARIA role</li>
+                    <li>Native vs. explicit role source</li>
+                    <li>Semantic mismatches</li>
+                    <li>All raw IA2 attributes</li>
+                    <li>DOM path of the focused element</li>
+                    <li>Parent elements up the DOM tree</li>
+                </ul>
+            </li>
+        </ol>
+
+        <h2>Information Displayed</h2>
+
+        <h3>Accessible Name</h3>
+        <p>The name that screen readers announce for the element.</p>
+
+        <h3>Name Source</h3>
+        <p>Where the accessible name comes from:</p>
+        <ul>
+            <li><strong>aria-label:</strong> Explicit ARIA label</li>
+            <li><strong>aria-labelledby:</strong> Reference to another element</li>
+            <li><strong>contents:</strong> Text content of the element</li>
+            <li><strong>alt:</strong> Alt text (for images)</li>
+            <li><strong>value:</strong> Element value attribute</li>
+            <li><strong>title:</strong> Title attribute</li>
+            <li><strong>placeholder:</strong> Placeholder text</li>
+        </ul>
+
+        <h3>Computed Role</h3>
+        <p>The ARIA role determined from:</p>
+        <ol>
+            <li>Explicit XML-roles (role attribute)</li>
+            <li>HTML native semantics</li>
+            <li>NVDA control type mapping</li>
+            <li>Unknown (fallback)</li>
+        </ol>
+
+        <h3>Semantic Source</h3>
+        <p>Whether the role comes from:</p>
+        <ul>
+            <li><strong>native HTML:</strong> HTML's implicit semantics (e.g., &lt;button&gt; → button role)</li>
+            <li><strong>explicit role:</strong> role attribute override</li>
+            <li><strong>redundant explicit role:</strong> role attribute matches native semantics</li>
+            <li><strong>unknown:</strong> Unable to determine</li>
+        </ul>
+
+        <h3>Native Semantic Mismatch</h3>
+        <p>Indicates whether an explicit ARIA role conflicts with the element's native HTML semantics.</p>
+
+        <h3>DOM Path</h3>
+        <p>A compact technical path that helps identify the element location in the page structure (for example: <code>main &gt; form#login &gt; input[name="email"]</code>).</p>
+
+        <h2>Technical Details</h2>
+        <p>This add-on utilizes:</p>
+        <ul>
+            <li>IAccessible2 (IA2) interfaces for accessibility attributes</li>
+            <li>NVDA's object model and control types</li>
+            <li>WAI-ARIA 1.2 specifications</li>
+            <li>Windows MSAA roles</li>
+        </ul>
+
+        <h2>Supported NVDA Versions</h2>
+        <ul>
+            <li><strong>Minimum:</strong> NVDA 2023.1</li>
+            <li><strong>Last tested:</strong> NVDA 2026.1</li>
+        </ul>
+
+        <h2>Author</h2>
+        <p>Mustafa Elçiçek<br>
+        <a href="mailto:mustafaelcicek5656@gmail.com">mustafaelcicek5656@gmail.com</a></p>
+
+        <h2>License</h2>
+        <p>GPL-2.0</p>
+
+        <h2>Contributing</h2>
+        <p>Contributions are welcome! Please report bugs and suggest improvements.</p>
+
+        <h2>Contributors</h2>
+        <ul>
+            <li><strong>Uğur Gürbüz</strong> — Thank you for your valuable support and thoughtful ideas.</li>
+            <li><strong>Google Gemini and GitHub Copilot</strong> — Although I don't have coding knowledge to develop an NVDA add-on, I thank these AI assistants for guiding me throughout the process, from writing code to resolving errors, until the idea became a working add-on.</li>
+        </ul>
+
+        <h2>Changelog</h2>
+        <h3>Version 1.0.1 (NVDA 2026.1 Compatibility)</h3>
+        <ul>
+            <li>Updated add-on compatibility metadata for NVDA 2026.1</li>
+        </ul>
+
+        <h3>Version 1.0.0 (Initial Release)</h3>
+        <ul>
+            <li>Initial release of Detailed Element Info</li>
+            <li>Display ARIA roles and attributes</li>
+            <li>Show accessible names and sources</li>
+            <li>Detect semantic mismatches</li>
+            <li>Parent element navigation</li>
+        </ul>
+
+    </div>
+</body>
+</html>
+

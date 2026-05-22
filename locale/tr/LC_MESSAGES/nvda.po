@@ -1,0 +1,88 @@
+# Turkish translation for Detailed Element Info
+# Copyright (C) 2026 Mustafa Elçiçek
+# This file is distributed under the same license as the Detailed Element Info package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Detailed Element Info 1.0.0\n"
+"Report-Msgid-Bugs-To: mustafaelcicek5656@gmail.com\n"
+"POT-Creation-Date: 2026-03-19 05:20+0000\n"
+"PO-Revision-Date: 2026-03-19 05:20+0000\n"
+"Last-Translator: Mustafa Elçiçek <mustafaelcicek5656@gmail.com>\n"
+"Language-Team: Turkish <tr@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: tr\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "Detailed Element Info"
+msgstr "Detaylı Öğe Bilgisi"
+
+msgid "Show focused element details"
+msgstr "Odaktaki öğenin detaylarını göster"
+
+msgid "Choose which fields to show when element details are displayed."
+msgstr "Öğe bilgileri görüntülenirken hangi alanların gösterileceğini seçin."
+
+msgid "Fields shown in report"
+msgstr "Raporda gösterilen alanlar"
+
+msgid "Select all"
+msgstr "Tümünü işaretle"
+
+msgid "Clear all"
+msgstr "Tümünü kaldır"
+
+msgid "Show tag summary"
+msgstr "Etiket özetini göster"
+
+msgid "Show accessible name"
+msgstr "Erişilebilir adı göster"
+
+msgid "Show name source"
+msgstr "Ad kaynağını göster"
+
+msgid "Show name source confidence"
+msgstr "Ad kaynağı güvenini göster"
+
+msgid "Show DOM tag"
+msgstr "DOM etiketini göster"
+
+msgid "Show computed role"
+msgstr "Hesaplanan rolü göster"
+
+msgid "Show semantic source"
+msgstr "Anlamsal kaynağı göster"
+
+msgid "Show native semantic mismatch"
+msgstr "Yerel anlamsal uyumsuzluğu göster"
+
+msgid "Show raw attributes"
+msgstr "Ham öznitelikleri göster"
+
+msgid "Show MSAA role"
+msgstr "MSAA rolünü göster"
+
+msgid "Show parent elements"
+msgstr "Üst öğeleri göster"
+
+msgid "Element not found"
+msgstr "Öğe bulunamadı"
+
+msgid "This feature only works on web pages"
+msgstr "Bu özellik sadece web sayfalarında çalışır"
+
+msgid "Press Esc to close this message"
+msgstr "Bu mesajı kapatmak için Esc tuşuna basın"
+
+#, python-format
+msgid "{} tag has {} attributes"
+msgstr "{} etiketinin {} parametresi var"
+
+#, python-format
+msgid "{} tag raw attributes:"
+msgstr "{} Etiketinin Raw Öznitelikleri:"
+
+msgid "No fields selected in settings"
+msgstr "Ayarlarda seçili alan yok"
