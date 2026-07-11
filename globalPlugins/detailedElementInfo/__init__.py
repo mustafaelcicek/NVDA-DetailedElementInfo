@@ -1,5 +1,13 @@
 # -*- coding: utf-8 -*-
 
+import sys
+import os
+
+
+addon_dir = os.path.dirname(__file__)
+if addon_dir not in sys.path:
+    sys.path.insert(0, addon_dir)
+
 import globalPluginHandler
 import addonHandler
 import api
@@ -7,7 +15,6 @@ import ui
 import textInfos
 import gui
 from scriptHandler import script
-
 addonHandler.initTranslation()
 
 from .config import ensureConfigSpec
@@ -31,6 +38,11 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         self.analyzer = ElementAnalyzer()
         self.reportBuilder = ReportBuilder(self.analyzer)
 
+        from .config import getBool, getConfig
+        if getBool(getConfig(), "advancedSupport"):
+            from . import server
+            server.start_server_in_background()
+
     def terminate(self):
         if DetailedElementInfoSettingsPanel in gui.settingsDialogs.NVDASettingsDialog.categoryClasses:
             gui.settingsDialogs.NVDASettingsDialog.categoryClasses.remove(
@@ -46,6 +58,56 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
     )
     def script_showElementInfo(self, gesture):
         obj = self._getCurrentObject()
+        if obj is None:
+            ui.message(_("Element not found"))
+            return
+
+#aşağıdaki kısım değişecek, birkaç şey denedim ama verim alamadım.
+#amacım tree'de olan elementi chrom'a gönderip ordan eşleştirme yapmaktı.
+        from .config import getBool, getConfig
+        if getBool(getConfig(), "advancedSupport"):
+            role_obj = getattr(obj, "role", None)
+            target_info = {
+                "name": getattr(obj, "name", "") or "",
+                "role": getattr(obj, "roleString", "") or "",
+                "role_value": role_obj.value if role_obj and hasattr(role_obj, "value") else -1
+            }
+            
+            if obj.location:
+                target_info["width"] = obj.location[2]
+                target_info["height"] = obj.location[3]
+                
+            # IA2 özelliklerinden tag, id, class gibi DOM bilgilerini çek
+            try:
+                attrs = {}
+                if hasattr(obj, "IAccessible2Attributes"):
+                    for attr in obj.IAccessible2Attributes:
+                        if ":" in attr:
+                            k, v = attr.split(":", 1)
+                            attrs[k.lower()] = v
+                elif hasattr(obj, "HTMLAttributes"):
+                    attrs = obj.HTMLAttributes
+                
+                if isinstance(attrs, dict):
+                    target_info["tag"] = attrs.get("tag", "")
+                    target_info["id"] = attrs.get("id", "")
+                    target_info["class"] = attrs.get("class", "")
+            except Exception:
+                pass
+
+            from . import server
+            server.request_dom_data_from_clients(target_info)
+            
+
+            import wx
+            wx.CallLater(300, self._showReportDelayed)
+        else:
+            self._showReportDelayed()
+#gecikmeyi bilerek ekledim, diğer türlü odak direkt değişip element bilgisi çekmiyodu eklenti.
+
+
+    def _showReportDelayed(self):
+        obj = self._getCurrentObject()
 
         if obj is None:
             ui.message(_("Element not found"))
@@ -56,7 +118,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
             return
 
         report = self.reportBuilder.buildReport(obj)
-        ui.browseableMessage(report, title=_("Detailed Element Info"))
+        ui.browseableMessage(report, title=_("Detailed Element Info"), isHtml=True)
 
     def _getCurrentObject(self):
         """
@@ -84,11 +146,6 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         return focus
 
     def _looksLikeHtmlOrAccessibleElement(self, obj):
-        """
-        Avoid limiting this only to web pages via treeInterceptor.
-        Some embedded browser controls or IA2 objects can expose useful
-        element data even when the treeInterceptor check is not enough.
-        """
         try:
             attrs = self.analyzer.getRawAttrs(obj)
         except Exception:

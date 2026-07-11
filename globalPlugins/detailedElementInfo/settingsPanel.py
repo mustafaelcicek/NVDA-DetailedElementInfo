@@ -3,7 +3,7 @@
 import wx
 import gui
 
-from .config import FIELD_OPTIONS, getConfig
+from .config import FIELD_OPTIONS, getConfig, getBool, getString
 
 
 class DetailedElementInfoSettingsPanel(gui.settingsDialogs.SettingsPanel):
@@ -40,10 +40,38 @@ class DetailedElementInfoSettingsPanel(gui.settingsDialogs.SettingsPanel):
         fieldsHelper.addItem(buttonsSizer)
         helper.addItem(fieldsGroup)
 
+        advancedGroup = wx.StaticBoxSizer(
+            wx.StaticBox(
+                self,
+                label=_("Gelişmiş Destek ve Yapay Zeka (Advanced Support)"),
+            ),
+            wx.VERTICAL,
+        )
+        advancedHelper = gui.guiHelper.BoxSizerHelper(self, sizer=advancedGroup)
+
+        self.advancedSupportCheckBox = wx.CheckBox(self, label=_("Gelişmiş Desteği (AI ve Chrome Eklentisi) Etkinleştir"))
+        advancedHelper.addItem(self.advancedSupportCheckBox)
+
+        self.chromeExtensionInfo = wx.StaticText(self, label=_("Not: Gelişmiş desteği kullanabilmek için Chrome eklentisinin kurulu olması gereklidir."))
+        advancedHelper.addItem(self.chromeExtensionInfo)
+
+        tokenSizer = wx.BoxSizer(wx.HORIZONTAL)
+        tokenLabel = wx.StaticText(self, label=_("Gemini AI Token:"))
+        self.aiTokenTextCtrl = wx.TextCtrl(self)
+        tokenSizer.Add(tokenLabel, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
+        tokenSizer.Add(self.aiTokenTextCtrl, 1, wx.ALL | wx.EXPAND, 5)
+        advancedHelper.addItem(tokenSizer)
+
+        helper.addItem(advancedGroup)
+
         self.selectAllButton.Bind(wx.EVT_BUTTON, self._onSelectAll)
         self.clearAllButton.Bind(wx.EVT_BUTTON, self._onClearAll)
+        self.advancedSupportCheckBox.Bind(wx.EVT_CHECKBOX, self._onAdvancedSupportToggle)
 
         self._load()
+
+    def _onAdvancedSupportToggle(self, evt):
+        self.aiTokenTextCtrl.Enable(self.advancedSupportCheckBox.GetValue())
 
     def _load(self):
         cfg = getConfig()
@@ -56,11 +84,20 @@ class DetailedElementInfoSettingsPanel(gui.settingsDialogs.SettingsPanel):
 
             self._fieldCheckBoxes[key].SetValue(value)
 
+        advanced = getBool(cfg, "advancedSupport", False)
+        self.advancedSupportCheckBox.SetValue(advanced)
+        self.aiTokenTextCtrl.SetValue(getString(cfg, "aiToken", ""))
+        self.aiTokenTextCtrl.Enable(advanced)
+
     def onSave(self):
         cfg = getConfig()
 
         for key, _label in FIELD_OPTIONS:
             cfg[key] = self._fieldCheckBoxes[key].GetValue()
+
+        cfg["advancedSupport"] = self.advancedSupportCheckBox.GetValue()
+        cfg["aiToken"] = self.aiTokenTextCtrl.GetValue()
+
 
     def _onSelectAll(self, evt):
         for key, _label in FIELD_OPTIONS:

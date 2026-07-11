@@ -16,6 +16,7 @@ Detailed Element Info is a utility add-on for NVDA that allows you to inspect HT
 - **Parent Navigation**: Navigate through parent elements to understand document structure
 - **State Tracking**: View element states (expanded, checked, selected, etc.) as ARIA attributes
 - **Source Detection**: Understand where accessible names come from (aria-label, contents, alt, title, etc.)
+- **Advanced Chrome Bridge (Experimental)**: Connects directly to a custom Chrome extension to fetch raw DOM elements, active properties, and HTML attributes instantly.
 
 ## Keyboard Shortcuts
 
@@ -76,11 +77,12 @@ A compact technical path that helps identify the element location in the page st
 
 ## Technical Details
 
-This add-on utilizes:
-- IAccessible2 (IA2) interfaces for accessibility attributes
-- NVDA's object model and control types
-- WAI-ARIA 1.2 specifications
-- Windows MSAA roles
+This add-on utilizes a **Zero-Dependency Native Architecture**:
+- Pure Python standard libraries (`http.server`, `urllib.request`) to avoid `pip` dependency hell and OpenSSL issues.
+- IAccessible2 (IA2) interfaces for accessibility attributes.
+- NVDA's object model and control types.
+- WAI-ARIA 1.2 specifications and Windows MSAA roles.
+- **HTTP Long Polling**: A custom, lightweight communication bridge with Chrome's Manifest V3 service workers, kept alive by content-script heartbeats.
 
 ## Author
 
@@ -106,12 +108,4 @@ Contributions are welcome! Please report bugs and suggest improvements.
 
 ## Changelog
 
-### Version 1.0.1 (NVDA 2026.1 Compatibility)
-- Updated add-on compatibility metadata for NVDA 2026.1
-
-### Version 1.0.0 (Initial Release)
-- Initial release of Detailed Element Info
-- Display ARIA roles and attributes
-- Show accessible names and sources
-- Detect semantic mismatches
-- Parent element navigation
+Please see the [CHANGELOG.md](CHANGELOG.md) file for a detailed history of updates and architectural improvements.

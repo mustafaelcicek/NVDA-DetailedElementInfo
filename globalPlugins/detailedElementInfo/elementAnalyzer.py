@@ -128,12 +128,6 @@ class ElementAnalyzer:
             return None
 
     def getNameSource(self, obj, attrs):
-        """
-        Return a tuple: (source, confidence).
-
-        This is a best-effort explanation. It is not a full implementation of
-        the accessible name computation algorithm.
-        """
         if "aria-labelledby" in attrs:
             return "aria-labelledby", "certain"
 
@@ -207,13 +201,6 @@ class ElementAnalyzer:
         return enumName
 
     def getFinalRole(self, explicitRole, nativeRole, nvdaRole):
-        """
-        Role priority for the report.
-
-        Explicit ARIA role usually wins over native role.
-        Native HTML role is the next best signal.
-        NVDA role is the fallback.
-        """
         if explicitRole:
             return explicitRole
 

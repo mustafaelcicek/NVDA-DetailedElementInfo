@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-
+#Bu kısımla da dom verisini doğru alabildikten sonra ilgilenelim.
 TAG_ARIA_ROLE = {
     "button": "button",
 

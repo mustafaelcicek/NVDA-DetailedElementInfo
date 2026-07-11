@@ -23,6 +23,8 @@ CONFIG_SPEC = {
     "showDerivedAttributes": "boolean(default=True)",
     "showMsaaRole": "boolean(default=True)",
     "showAncestors": "boolean(default=True)",
+    "advancedSupport": "boolean(default=False)",
+    "aiToken": "string(default='')",
 }
 
 
@@ -43,6 +45,8 @@ DEFAULTS = {
     "showDerivedAttributes": True,
     "showMsaaRole": True,
     "showAncestors": True,
+    "advancedSupport": False,
+    "aiToken": "",
 }
 
 
@@ -92,3 +96,9 @@ def getBool(cfg, key, default=None):
         return bool(cfg[key])
     except Exception:
         return bool(default)
+
+def getString(cfg, key, default=""):
+    try:
+        return str(cfg[key])
+    except Exception:
+        return default
