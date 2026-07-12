@@ -52,8 +52,12 @@ coverage.xml
 cover/
 
 # Translations
+#   This NVDA add-on ships its compiled translations (.mo) and the template (.pot),
+#   so the files under locale/ are intentionally kept in version control.
 *.mo
 *.pot
+!locale/**/*.mo
+!locale/**/*.pot
 
 # Django stuff:
 *.log
@@ -216,3 +220,23 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# NVDA add-on build artifacts
+*.nvda-addon
+
+# AI assistant instruction & config files
+#   Keep AI coding-assistant instructions and local state out of version control.
+#   (Some teams prefer to commit these to share them — delete a line to track that file.)
+
+#   GitHub Copilot
+.github/copilot-instructions.md
+.github/instructions/
+
+#   Claude / Claude Code
+CLAUDE.md
+CLAUDE.local.md
+.claude/
+
+#   OpenAI Codex
+AGENTS.md
+.codex/
