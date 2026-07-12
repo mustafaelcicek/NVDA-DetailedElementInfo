@@ -225,18 +225,16 @@ __marimo__/
 *.nvda-addon
 
 # AI assistant instruction & config files
-#   Keep AI coding-assistant instructions and local state out of version control.
-#   (Some teams prefer to commit these to share them — delete a line to track that file.)
+#   The shared instruction files (AGENTS.md, CLAUDE.md, .github/copilot-instructions.md)
+#   are committed so all contributors share the same guidance. Local/personal state and
+#   overrides stay ignored.
 
-#   GitHub Copilot
-.github/copilot-instructions.md
+#   GitHub Copilot (copilot-instructions.md is tracked; path-specific instructions are local)
 .github/instructions/
 
-#   Claude / Claude Code
-CLAUDE.md
+#   Claude / Claude Code (CLAUDE.md is tracked; local overrides and state are not)
 CLAUDE.local.md
 .claude/
 
-#   OpenAI Codex
-AGENTS.md
+#   OpenAI Codex (AGENTS.md is tracked; local state is not)
 .codex/

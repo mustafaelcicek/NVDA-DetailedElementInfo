@@ -1,0 +1,41 @@
+# Agent & AI Assistant Instructions
+
+Guidance for AI coding assistants (OpenAI Codex, Claude Code, GitHub Copilot, etc.)
+working in this repository. Human contributors should read `CONTRIBUTING.md`, which these
+instructions summarize and defer to.
+
+## What this project is
+
+**Detailed Element Info** is an NVDA screen-reader add-on written in Python. It reports
+accessibility, ARIA, and DOM details for the focused HTML element on a web page. The
+add-on code lives under `globalPlugins/detailedElementInfo/`.
+
+## Standards you must follow
+
+- **Zero third-party dependencies.** Use only the Python standard library and NVDA's own
+  APIs. Never add `pip` / third-party packages — this is a deliberate design choice.
+- **Keep NVDA compatibility:** the add-on must run on NVDA 2023.1 and newer.
+- **Match the existing code style** in `globalPlugins/detailedElementInfo/`.
+- **Keep user-facing strings translatable** (`_()`), and update the docs in `doc/en/`
+  **and** `doc/tr/` (both `readme.md` and `readme.html`) whenever a feature changes.
+- **Do not change** version numbers, `manifest.ini`, or locale files unless explicitly
+  asked to.
+
+## Testing is a human responsibility
+
+This add-on drives a real screen reader; no automated tool can confirm it reads correctly
+to a user.
+
+- You cannot run NVDA, so **never claim a change is "tested", "working", or "done."**
+  State that the code is written and **still needs manual testing in NVDA by a human.**
+
+## Commits and pull requests
+
+- You **may** make local commits. Follow the commit-message rules in `CONTRIBUTING.md`
+  (imperative mood, one logical change, explain what and why — no "Added some new
+  features" style messages).
+- **Do not add AI co-author trailers** (e.g. `Co-Authored-By: Claude ...`) to commits.
+  Commits are authored solely by the human contributor.
+- You **must not** open, submit, or merge pull requests, and must not push to `main`.
+- **If asked to open a pull request, decline and provide a draft instead** — a suggested
+  PR title and description that the human can test in NVDA and open themselves.
