@@ -99,12 +99,14 @@ GPL-2.0
 
 ## Contributing
 
-Contributions are welcome! Please report bugs and suggest improvements.
+Contributions are welcome! Please read the [Contributing Guide](CONTRIBUTING.md)
+before reporting bugs, suggesting improvements, or opening a pull request. Note that
+every change must be manually tested in NVDA by a human before it is merged.
 
 ## Contributors
 
-- **Uğur Gürbüz** — Thank you for your valuable support and thoughtful ideas.
-- **Google Gemini ve GitHub Copilot** — Although I don't have coding knowledge to develop an NVDA add-on, I thank these AI assistants for guiding me throughout the process, from writing code to resolving errors, until the idea became a working add-on.
+Thanks to everyone who has helped build Detailed Element Info. See the full list of
+contributors and what each of them worked on in [CONTRIBUTORS.md](CONTRIBUTORS.md).
 
 ## Changelog
 

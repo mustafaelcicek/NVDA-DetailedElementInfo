@@ -24,6 +24,13 @@
             <li><strong>Parent Navigation:</strong> Navigate through parent elements to understand document structure</li>
             <li><strong>State Tracking:</strong> View element states (expanded, checked, selected, etc.) as ARIA attributes</li>
             <li><strong>Source Detection:</strong> Understand where accessible names come from (aria-label, contents, alt, title, etc.)</li>
+            <li><strong>Name Source Confidence:</strong> See how certain the add-on is about where the accessible name comes from (certain, inferred, unknown)</li>
+            <li><strong>Multiple Role Views:</strong> Compare the explicit ARIA role, native HTML role, NVDA role, and the final inferred role side by side</li>
+            <li><strong>MSAA Role &amp; Heading Level:</strong> View the raw MSAA role and, for headings, the heading level</li>
+            <li><strong>Derived State Attributes:</strong> See ARIA-like attributes derived from NVDA states (expanded, checked, selected, etc.)</li>
+            <li><strong>Configurable Fields:</strong> Choose exactly which fields appear in the report from the add-on settings, with Select all / Clear all</li>
+            <li><strong>Advanced Support — Chrome Bridge (Experimental):</strong> Connect to a companion Chrome extension to fetch the page's real DOM data, HTML attributes, and active properties directly</li>
+            <li><strong>AI Analysis with Gemini (Experimental):</strong> Ask Google Gemini for a plain-language explanation of what the focused element is and how it can be used</li>
         </ul>
 
         <h2>Keyboard Shortcuts</h2>
@@ -102,13 +109,39 @@
         <h3>DOM Path</h3>
         <p>A compact technical path that helps identify the element location in the page structure (for example: <code>main &gt; form#login &gt; input[name="email"]</code>).</p>
 
-        <h2>Technical Details</h2>
-        <p>This add-on utilizes:</p>
+        <h2>Settings</h2>
+        <p>Open <strong>NVDA menu &gt; Preferences &gt; Settings &gt; Detailed Element Info</strong> to configure the add-on:</p>
         <ul>
+            <li><strong>Choose which fields to show:</strong> Toggle each field of the report on or off — tag summary, accessible name, name source and confidence, DOM tag and path, explicit / native / NVDA / final roles, semantic source and mismatch, raw IA2 attributes, attributes derived from NVDA states, MSAA role, and ancestor elements.</li>
+            <li><strong>Select all / Clear all:</strong> Turn every field on or off at once.</li>
+            <li><strong>Enable Advanced Support (AI and Chrome extension):</strong> Turns on the experimental Chrome Bridge and AI features described below.</li>
+            <li><strong>Gemini AI Token:</strong> Enter your own Google Gemini API key so the AI analysis can run.</li>
+        </ul>
+
+        <h2>Advanced Support — Chrome Bridge (Experimental)</h2>
+        <p>Detailed Element Info can optionally connect to a companion Chrome extension to look beyond NVDA's virtual buffer and read the page's real DOM.</p>
+        <ul>
+            <li>When Advanced Support is enabled, the add-on starts a lightweight local server (<code>127.0.0.1:63333</code>) that talks to the Chrome extension using HTTP long polling.</li>
+            <li>The report then includes an <strong>Active element's DOM attributes</strong> section with the live HTML attributes and properties fetched from Chrome.</li>
+            <li>This requires the companion Chrome extension to be installed. The feature is experimental and under active development.</li>
+        </ul>
+
+        <h2>AI Analysis with Gemini (Experimental)</h2>
+        <p>With Advanced Support enabled and a Gemini API token set, the report offers a <strong>Request AI comment</strong> action.</p>
+        <ul>
+            <li>The collected DOM data is sent to Google Gemini, which returns a short, plain-language explanation of what the element is, its purpose, and how a screen reader user can interact with it.</li>
+            <li>This requires your own Google Gemini API key, entered in the settings. The feature is experimental.</li>
+        </ul>
+
+        <h2>Technical Details</h2>
+        <p>This add-on utilizes a <strong>zero-dependency native architecture</strong>:</p>
+        <ul>
+            <li>Pure Python standard libraries (<code>http.server</code>, <code>urllib.request</code>) to avoid <code>pip</code> dependency issues</li>
             <li>IAccessible2 (IA2) interfaces for accessibility attributes</li>
             <li>NVDA's object model and control types</li>
             <li>WAI-ARIA 1.2 specifications</li>
             <li>Windows MSAA roles</li>
+            <li>HTTP long polling: a lightweight bridge to the companion Chrome extension's Manifest V3 service worker, kept alive by content-script heartbeats</li>
         </ul>
 
         <h2>Supported NVDA Versions</h2>
@@ -125,13 +158,10 @@
         <p>GPL-2.0</p>
 
         <h2>Contributing</h2>
-        <p>Contributions are welcome! Please report bugs and suggest improvements.</p>
+        <p>Contributions are welcome! Please read the Contributing Guide (<code>CONTRIBUTING.md</code>) in the project repository before reporting bugs, suggesting improvements, or opening a pull request.</p>
 
         <h2>Contributors</h2>
-        <ul>
-            <li><strong>Uğur Gürbüz</strong> — Thank you for your valuable support and thoughtful ideas.</li>
-            <li><strong>Google Gemini and GitHub Copilot</strong> — Although I don't have coding knowledge to develop an NVDA add-on, I thank these AI assistants for guiding me throughout the process, from writing code to resolving errors, until the idea became a working add-on.</li>
-        </ul>
+        <p>Detailed Element Info is built with the help of code contributors, testers, and supporters. For the full list of contributors and what each of them worked on, see <code>CONTRIBUTORS.md</code> in the project repository.</p>
 
         <h2>Changelog</h2>
         <h3>Version 1.0.1 (NVDA 2026.1 Compatibility)</h3>

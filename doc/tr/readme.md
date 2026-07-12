@@ -16,6 +16,13 @@ Detaylı Öğe Bilgisi, NVDA için HTML öğelerini incelemenize ve bunların er
 - **Üst Öğe Navigasyonu**: Belge yapısını anlamak için üst öğeler arasında gezinme
 - **Durum Takibi**: Öğe durumlarını (genişletilmiş, işaretli, seçili vb.) ARIA nitelikleri olarak görüntüleme
 - **Kaynak Algılaması**: Erişilebilir adların nereden geldiğini anlama (aria-label, içerik, alt, başlık vb.)
+- **Ad Kaynağı Güveni**: Erişilebilir adın nereden geldiği konusunda eklentinin ne kadar emin olduğunu görme (kesin, çıkarım, bilinmiyor)
+- **Çoklu Rol Görünümü**: Açık ARIA rolünü, yerel HTML rolünü, NVDA rolünü ve nihai çıkarılan rolü yan yana karşılaştırma
+- **MSAA Rolü ve Başlık Düzeyi**: Ham MSAA rolünü ve başlıklar için başlık düzeyini görüntüleme
+- **Durumdan Türetilen Nitelikler**: NVDA durumlarından türetilen ARIA benzeri nitelikleri görme (genişletilmiş, işaretli, seçili vb.)
+- **Yapılandırılabilir Alanlar**: Raporda hangi alanların görüneceğini eklenti ayarlarından seçme; Tümünü seç / Tümünü temizle düğmeleriyle
+- **Gelişmiş Destek — Chrome Köprüsü (Deneysel)**: Sayfanın gerçek DOM verisine, HTML niteliklerine ve aktif özelliklerine doğrudan erişmek için eşlik eden bir Chrome uzantısına bağlanma
+- **Gemini ile Yapay Zeka Analizi (Deneysel)**: Odaktaki öğenin ne olduğunu ve nasıl kullanılabileceğini sade bir dille açıklaması için Google Gemini'ye sorma
 
 ## Klavye Kısayolları
 
@@ -75,13 +82,39 @@ Açık bir ARIA rolünün öğenin yerel HTML anlamsal özellikleriyle çelişip
 ### DOM Yolu
 Öğenin sayfa yapısındaki konumunu hızlıca anlamanızı sağlayan kısa teknik yol (örnek: `main > form#login > input[name="email"]`).
 
+## Ayarlar
+
+Eklentiyi yapılandırmak için **NVDA menüsü > Tercihler > Ayarlar > Detaylı Öğe Bilgisi** bölümünü açın:
+
+- **Gösterilecek alanları seçme**: Raporun her alanını açıp kapatın — etiket özeti, erişilebilir ad, ad kaynağı ve güveni, DOM etiketi ve yolu, açık / yerel / NVDA / nihai roller, anlamsal kaynak ve uyumsuzluk, ham IA2 nitelikleri, NVDA durumlarından türetilen nitelikler, MSAA rolü ve üst öğeler.
+- **Tümünü seç / Tümünü temizle**: Tüm alanları tek seferde açın veya kapatın.
+- **Gelişmiş Desteği (AI ve Chrome Eklentisi) Etkinleştir**: Aşağıda açıklanan deneysel Chrome Köprüsü ve yapay zeka özelliklerini açar.
+- **Gemini AI Token**: Yapay zeka analizinin çalışabilmesi için kendi Google Gemini API anahtarınızı girin.
+
+## Gelişmiş Destek — Chrome Köprüsü (Deneysel)
+
+Detaylı Öğe Bilgisi, NVDA'nın sanal belleğinin ötesine geçip sayfanın gerçek DOM'unu okumak için isteğe bağlı olarak eşlik eden bir Chrome uzantısına bağlanabilir.
+
+- Gelişmiş Destek etkinleştirildiğinde, eklenti Chrome uzantısıyla HTTP uzun yoklama (long polling) kullanarak konuşan hafif bir yerel sunucu (`127.0.0.1:63333`) başlatır.
+- Rapor daha sonra Chrome'dan alınan canlı HTML nitelikleri ve özellikleriyle bir **Aktif elementin dom öznitelikleri** bölümü içerir.
+- Bu özellik, eşlik eden Chrome uzantısının kurulu olmasını gerektirir. Özellik deneyseldir ve aktif olarak geliştirilmektedir.
+
+## Gemini ile Yapay Zeka Analizi (Deneysel)
+
+Gelişmiş Destek etkinken ve bir Gemini API anahtarı girildiğinde, rapor bir **AI Yorumu iste** eylemi sunar.
+
+- Toplanan DOM verisi Google Gemini'ye gönderilir ve Gemini, öğenin ne olduğunu, amacını ve bir ekran okuyucu kullanıcısının onunla nasıl etkileşime girebileceğini kısa ve sade bir dille açıklar.
+- Bu, ayarlarda girilen kendi Google Gemini API anahtarınızı gerektirir. Özellik deneyseldir.
+
 ## Teknik Ayrıntılar
 
-Bu eklenti şunları kullanır:
+Bu eklenti **sıfır bağımlılıklı yerel bir mimari** kullanır:
+- `pip` bağımlılık sorunlarından kaçınmak için saf Python standart kütüphaneleri (`http.server`, `urllib.request`)
 - IAccessible2 (IA2) arayüzleri erişilebilirlik nitelikleri için
 - NVDA'nın nesne modeli ve kontrol türleri
 - WAI-ARIA 1.2 spesifikasyonları
 - Windows MSAA rolleri
+- HTTP uzun yoklama: eşlik eden Chrome uzantısının Manifest V3 hizmet çalışanına (service worker), içerik betiği sinyalleriyle canlı tutulan hafif bir köprü
 
 ## Desteklenen NVDA Sürümleri
 
@@ -98,12 +131,11 @@ GPL-2.0
 
 ## Katkı Sağlama
 
-Katkılar hoş karşılanır! Lütfen hataları bildirin ve iyileştirmeler önerin.
+Katkılar hoş karşılanır! Hataları bildirmeden, iyileştirmeler önermeden veya bir çekme isteği (pull request) açmadan önce lütfen proje deposundaki Katkı Kılavuzu'nu (`CONTRIBUTING.md`) okuyun.
 
 ## Katkı Sağlayanlar
 
-- **Değerli abim Uğur Gürbüz'e** — Kıymetli destekleri ve yapıcı fikirleri için teşekkür ederim.
-- **Google Gemini ve GitHub Copilot'a** — Bir NVDA eklentisi geliştirecek düzeyde kodlama bilgim olmasa da, fikirden çalışır hale gelene kadar tüm süreçte bana yol gösteren, kod yazımından hata çözümüne kadar her aşamada destek olan yapay zekâ asistanları Google Gemini ve GitHub Copilot’a teşekkür ederim.
+Detaylı Öğe Bilgisi; kod katkısı sağlayanların, test edenlerin ve destekçilerin yardımıyla geliştirilmektedir. Katkı sağlayanların tam listesi ve her birinin üzerinde çalıştığı konular için proje deposundaki `CONTRIBUTORS.md` dosyasına bakın.
 
 ## Değişiklik Günlüğü
 
