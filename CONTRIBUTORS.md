@@ -25,12 +25,3 @@ contribution is merged, you'll be added.
 | Contributor | Contribution |
 |-------------|--------------|
 | **Uğur Gürbüz** | Valuable ideas, thoughtful feedback, and ongoing support. |
-
-## AI assistance
-
-The original author has noted that, without a coding background, AI assistants helped
-turn the idea into a working add-on — from writing code to resolving errors.
-
-| Assistant | Contribution |
-|-----------|--------------|
-| **Google Gemini** & **GitHub Copilot** | Development guidance and code assistance throughout the project. |
