@@ -25,7 +25,12 @@ addon_info = AddonInfo(
 	addon_version="1.0.2",
 	# Brief changelog for this version
 	# Translators: what's new content for the add-on version to be shown in the add-on store
-	addon_changelog=_("""Initial release."""),
+	addon_changelog=_("""
+- Added an experimental Chrome Bridge companion extension so the add-on can read the page's real DOM data instead of relying only on NVDA's virtual buffer.
+- Added experimental AI analysis of the collected DOM/ARIA data using Google Gemini.
+- Reports are now shown in a structured, hierarchical HTML view instead of plain text.
+- Added "Enable Advanced Support" and "Gemini API Key" options to the add-on settings.
+"""),
 	# Author(s)
 	addon_author="Mustafa Elçiçek <mustafaelcicek5656@gmail.com>",
 	# URL for the add-on documentation support

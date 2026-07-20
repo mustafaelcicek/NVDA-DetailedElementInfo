@@ -139,6 +139,12 @@ Detailed Element Info is built with the help of code contributors, testers, and 
 
 ## Changelog
 
+### Version 1.0.2
+- Added an experimental Chrome Bridge companion extension so the add-on can read the page's real DOM data instead of relying only on NVDA's virtual buffer.
+- Added experimental AI analysis of the collected DOM/ARIA data using Google Gemini.
+- Reports are now shown in a structured, hierarchical HTML view instead of plain text.
+- Added "Enable Advanced Support" and "Gemini API Key" options to the add-on settings.
+
 ### Version 1.0.1 (NVDA 2026.1 Compatibility)
 - Updated add-on compatibility metadata for NVDA 2026.1
 

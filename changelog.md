@@ -2,14 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.1.0] 
+## [1.0.2]
 
 ### Added
-- **Chrome Bridge (Gelişmiş Destek):** Eklentiye özel bir Chrome uzantısı (Bridge) geliştirildi. Bu sayede NVDA, tarayıcının sanal belleğine (virtual buffer) mahkum kalmadan sayfanın gerçek DOM verisine, HTML yapısına ve aktif özelliklerine doğrudan erişebilir hale gelmesi planlanıyor.
-- **Yapay Zeka (Gemini) Analizi:** Çekilen ham DOM verisini ve ARIA niteliklerini analiz etmek için sisteme Google Gemini yeteneği kazandırıldı. (dom verisi alındıktan sonra devreye girecek.)
-- **Chrome Eklentisi Haberleşmesi** `http.server`, `urllib.request` kullanılarak arka planda yerel bir iletişim sunucusu kuruldu. karıştı.
-- **Yapılandırılmış HTML Raporlama:** Rapor çıktıları düz metin yerine temiz başlıklar (H1, H2) ve yapılandırılmış listeler içeren hiyerarşik bir HTML arayüzüne (Browseable Message) geçildi. 
-- **Ayarlar Paneli Güncellemesi:** NVDA eklenti ayarlarına "Gelişmiş Desteği Etkinleştir" ve "Gemini API Anahtarı" seçenekleri eklendi.
+- **Chrome Bridge (Advanced Support):** Added a dedicated companion Chrome extension (Bridge) for the add-on, letting NVDA access the page's real DOM data, HTML structure, and live properties directly, instead of being limited to the browser's virtual buffer.
+- **AI (Gemini) Analysis:** Added Google Gemini analysis of the collected raw DOM data and ARIA attributes (runs once the DOM data has been retrieved).
+- **Chrome Extension Communication:** Set up a local communication server in the background using `http.server` and `urllib.request`.
+- **Structured HTML Reporting:** Report output moved from plain text to a hierarchical HTML interface (Browseable Message) with clean headings (H1, H2) and structured lists.
+- **Settings Panel Update:** Added "Enable Advanced Support" and "Gemini API Key" options to the NVDA add-on settings.
 
 ### Changed
-- Raporlama arayüzü, hem NVDA'nın standart IA2 verilerini hem de Chrome ve Yapay Zeka'dan gelen derinlemesine analizleri gösterecek şekilde zenginleştirildi.
+- The reporting interface was enriched to show both NVDA's standard IA2 data and the deeper analysis from Chrome and AI.
