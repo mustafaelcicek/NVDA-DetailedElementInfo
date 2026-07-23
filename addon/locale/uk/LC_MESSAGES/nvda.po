@@ -1,0 +1,215 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
+"POT-Creation-Date: 2026-07-20 17:21+0300\n"
+"PO-Revision-Date: 2026-07-21 18:28+0300\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.9\n"
+"X-Poedit-Basepath: .\n"
+
+#. Add-on summary/title, usually the user visible name of the add-on
+#. Translators: Summary/title for this add-on
+#. to be shown on installation and add-on information found in add-on store
+#: addon\globalPlugins\detailedElementInfo\reportBuilder.py:17
+#: addon\globalPlugins\detailedElementInfo\settingsPanel.py:10
+#: addon\globalPlugins\detailedElementInfo\__init__.py:27
+#: addon\globalPlugins\detailedElementInfo\__init__.py:121 buildVars.py:20
+msgid "Detailed Element Info"
+msgstr "Детальна інформація про елемент"
+
+#: addon\globalPlugins\detailedElementInfo\reportBuilder.py:18
+msgid "AI Yorumu iste"
+msgstr "Отримати коментар від ШІ"
+
+#: addon\globalPlugins\detailedElementInfo\reportBuilder.py:20
+msgid "Current element"
+msgstr "Поточний елемент"
+
+#: addon\globalPlugins\detailedElementInfo\reportBuilder.py:31
+msgid "Aktif elementin dom öznitelikleri"
+msgstr "DOM атрибути активного елемента"
+
+#: addon\globalPlugins\detailedElementInfo\reportBuilder.py:43
+msgid "Ancestor elements"
+msgstr "Батьківські елементи вищих рівнів"
+
+#: addon\globalPlugins\detailedElementInfo\reportBuilder.py:46
+#, python-brace-format
+msgid "Ancestor {}"
+msgstr "Батьківський {}"
+
+#: addon\globalPlugins\detailedElementInfo\reportBuilder.py:49
+msgid "Press Esc to close this message"
+msgstr "Натисніть Esc, щоб закрити це повідомлення"
+
+#: addon\globalPlugins\detailedElementInfo\reportBuilder.py:66
+#, python-brace-format
+msgid "{} tag has {} attributes"
+msgstr "Тег {} має {} атрибутів"
+
+#: addon\globalPlugins\detailedElementInfo\reportBuilder.py:71
+msgid "unavailable"
+msgstr "недоступно"
+
+#: addon\globalPlugins\detailedElementInfo\reportBuilder.py:73
+msgid "empty"
+msgstr "порожньо"
+
+#: addon\globalPlugins\detailedElementInfo\reportBuilder.py:76
+#, python-brace-format
+msgid "Accessible name: {}"
+msgstr "Доступна назва: {}"
+
+#: addon\globalPlugins\detailedElementInfo\reportBuilder.py:79
+#, python-brace-format
+msgid "Name source: {}"
+msgstr "Назва джерела: {}"
+
+#: addon\globalPlugins\detailedElementInfo\reportBuilder.py:82
+#, python-brace-format
+msgid "Name source confidence: {}"
+msgstr "Надійність назви джерела: {}"
+
+#: addon\globalPlugins\detailedElementInfo\reportBuilder.py:85
+#, python-brace-format
+msgid "DOM tag: {}"
+msgstr "Тег DOM: {}"
+
+#: addon\globalPlugins\detailedElementInfo\reportBuilder.py:85
+#: addon\globalPlugins\detailedElementInfo\reportBuilder.py:88
+#: addon\globalPlugins\detailedElementInfo\reportBuilder.py:100
+msgid "unknown"
+msgstr "невідомо"
+
+#: addon\globalPlugins\detailedElementInfo\reportBuilder.py:89
+#, python-brace-format
+msgid "DOM path: {}"
+msgstr "Шлях DOM: {}"
+
+#: addon\globalPlugins\detailedElementInfo\reportBuilder.py:92
+msgid "none"
+msgstr "жодного"
+
+#: addon\globalPlugins\detailedElementInfo\reportBuilder.py:93
+#, python-brace-format
+msgid "Explicit ARIA role: {}"
+msgstr "Явна роль ARIA: {}"
+
+#: addon\globalPlugins\detailedElementInfo\reportBuilder.py:96
+msgid "none detected"
+msgstr "нічого не виявлено"
+
+#: addon\globalPlugins\detailedElementInfo\reportBuilder.py:97
+#, python-brace-format
+msgid "Native HTML role: {}"
+msgstr "Нативна HTML роль: {}"
+
+#: addon\globalPlugins\detailedElementInfo\reportBuilder.py:101
+#, python-brace-format
+msgid "NVDA role: {}"
+msgstr "Роль NVDA: {}"
+
+#: addon\globalPlugins\detailedElementInfo\reportBuilder.py:104
+#, python-brace-format
+msgid "Final inferred role: {}"
+msgstr "Остаточна визначена роль: {}"
+
+#: addon\globalPlugins\detailedElementInfo\reportBuilder.py:107
+#, python-brace-format
+msgid "Heading level: {}"
+msgstr "Заголовок рівня: {}"
+
+#: addon\globalPlugins\detailedElementInfo\reportBuilder.py:110
+#, python-brace-format
+msgid "Semantic source: {}"
+msgstr "Семантичне джерело: {}"
+
+#: addon\globalPlugins\detailedElementInfo\reportBuilder.py:113
+#, python-brace-format
+msgid "Native semantic mismatch: {}"
+msgstr "Невідповідність нативної семантики: {}"
+
+#: addon\globalPlugins\detailedElementInfo\reportBuilder.py:116
+#, python-brace-format
+msgid "MSAA role: {}"
+msgstr "Роль MSAA: {}"
+
+#: addon\globalPlugins\detailedElementInfo\reportBuilder.py:121
+msgid "Raw IA2 attributes:"
+msgstr "Необроблені атрибути IA2:"
+
+#: addon\globalPlugins\detailedElementInfo\reportBuilder.py:127
+msgid "Attributes derived from NVDA states:"
+msgstr "Атрибути, отримані зі станів NVDA:"
+
+#. Only <ul> and </ul>
+#: addon\globalPlugins\detailedElementInfo\reportBuilder.py:133
+msgid "No fields selected in settings"
+msgstr "У налаштуваннях не вибрано жодного поля"
+
+#: addon\globalPlugins\detailedElementInfo\settingsPanel.py:18
+msgid "Choose which fields to show when element details are displayed."
+msgstr "Виберіть, які поля показувати під час показу деталей елемента."
+
+#: addon\globalPlugins\detailedElementInfo\settingsPanel.py:34
+msgid "Select all"
+msgstr "Вибрати все"
+
+#: addon\globalPlugins\detailedElementInfo\settingsPanel.py:35
+msgid "Clear all"
+msgstr "Очистити все"
+
+#: addon\globalPlugins\detailedElementInfo\settingsPanel.py:46
+msgid "Gelişmiş Destek ve Yapay Zeka (Advanced Support)"
+msgstr "Підтримка та штучний інтелект (Розширена підтримка)"
+
+#: addon\globalPlugins\detailedElementInfo\settingsPanel.py:52
+msgid "Gelişmiş Desteği (AI ve Chrome Eklentisi) Etkinleştir"
+msgstr "Увімкнути розширену підтримку (ШІ та розширення для Chrome)"
+
+#: addon\globalPlugins\detailedElementInfo\settingsPanel.py:55
+msgid ""
+"Not: Gelişmiş desteği kullanabilmek için Chrome eklentisinin kurulu olması "
+"gereklidir."
+msgstr ""
+"Примітка: Щоб скористатися розширеною підтримкою, необхідно встановити "
+"розширення Chrome."
+
+#: addon\globalPlugins\detailedElementInfo\settingsPanel.py:59
+msgid "Gemini AI Token:"
+msgstr "Ключ API Gemini:"
+
+#: addon\globalPlugins\detailedElementInfo\__init__.py:55
+msgid "Show focused element details"
+msgstr "Показати деталі елемента у фокусі"
+
+#: addon\globalPlugins\detailedElementInfo\__init__.py:62
+#: addon\globalPlugins\detailedElementInfo\__init__.py:113
+msgid "Element not found"
+msgstr "Елемент не знайдено"
+
+#: addon\globalPlugins\detailedElementInfo\__init__.py:117
+msgid "No HTML or accessibility element information found"
+msgstr "Не знайдено HTML-інформацію або інформацію про елементи доступності"
+
+#. Add-on description
+#. Translators: Long description to be shown for this add-on on add-on information from add-on store
+#: buildVars.py:23
+msgid ""
+"Shows accessibility, ARIA, and DOM details for the focused HTML element on "
+"web pages."
+msgstr ""
+"Показує доступність, деталі ARIA та DOM для вибраного елемента HTML на веб-"
+"сторінках."
+
+#. Brief changelog for this version
+#. Translators: what's new content for the add-on version to be shown in the add-on store
+#: buildVars.py:28
+msgid "Initial release."
+msgstr "Початковий випуск."
