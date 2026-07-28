@@ -15,8 +15,6 @@ class ReportBuilder:
             "<head><meta http-equiv='x-ua-compatible' content='IE=edge'></head>",
             "<body>",
             f"<h1>{_('Detailed Element Info')}</h1>",
-            f"<a href='#' role='button' id='ai-btn' style='display: inline-block; padding: 5px 10px; background-color: #f0f0f0; border: 1px solid #ccc; text-decoration: none; color: black;'>{_('AI Yorumu iste')}</a>",
-            "<div id='ai-result' style='margin-top: 10px; font-weight: bold;'></div>",
             f"<h2>{_('Current element')}</h2>"
         ]
 
@@ -76,10 +74,10 @@ class ReportBuilder:
             html.append(f"<li>{_('Accessible name: {}').format(nameText)}</li>")
 
         if getBool(cfg, "showNameSource"):
-            html.append(f"<li>{_('Name source: {}').format(data['nameSource'])}</li>")
+            html.append(f"<li>{_('Name source: {}').format(_(data['nameSource']))}</li>")
 
         if getBool(cfg, "showNameSourceConfidence"):
-            html.append(f"<li>{_('Name source confidence: {}').format(data['nameConfidence'])}</li>")
+            html.append(f"<li>{_('Name source confidence: {}').format(_(data['nameConfidence']))}</li>")
 
         if getBool(cfg, "showDomTag"):
             html.append(f"<li>{_('DOM tag: {}').format(tag if tag else _('unknown'))}</li>")
@@ -101,16 +99,16 @@ class ReportBuilder:
             html.append(f"<li>{_('NVDA role: {}').format(nvdaRole)}</li>")
 
         if getBool(cfg, "showFinalRole"):
-            html.append(f"<li>{_('Final inferred role: {}').format(data['finalRole'])}</li>")
+            html.append(f"<li>{_('Final inferred role: {}').format(_(data['finalRole']))}</li>")
 
         if data["headingLevel"]:
             html.append(f"<li>{_('Heading level: {}').format(data['headingLevel'])}</li>")
 
         if getBool(cfg, "showSemanticSource"):
-            html.append(f"<li>{_('Semantic source: {}').format(data['semanticSource'])}</li>")
+            html.append(f"<li>{_('Semantic source: {}').format(_(data['semanticSource']))}</li>")
 
         if getBool(cfg, "showNativeSemanticMismatch"):
-            html.append(f"<li>{_('Native semantic mismatch: {}').format(data['nativeSemanticMismatch'])}</li>")
+            html.append(f"<li>{_('Native semantic mismatch: {}').format(_(data['nativeSemanticMismatch']))}</li>")
 
         if getBool(cfg, "showMsaaRole") and data["msaaRole"] is not None:
             html.append(f"<li>{_('MSAA role: {}').format(self._formatMsaaRole(data['msaaRole']))}</li>")

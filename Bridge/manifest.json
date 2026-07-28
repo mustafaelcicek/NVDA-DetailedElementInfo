@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "NVDA Bridge",
+  "version": "1.0",
+  "description": "NVDA Detailed Element Info eklentisi için DOM verisi köprüsü",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    },
+    {
+      "matches": ["<all_urls>"],
+      "js": ["inject.js"],
+      "world": "MAIN"
+    }
+  ],
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ]
+}

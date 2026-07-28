@@ -1,8 +1,9 @@
-#Şimdilik bu dosya böyle kalsın, hala net veriyi almak birincil önceliğimiz.
 import logging
 import json
 import urllib.request
 import urllib.error
+import addonHandler
+addonHandler.initTranslation()
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +21,7 @@ def setup_gemini():
 def analyze_dom_with_gemini(dom_data):
     api_key = get_api_key()
     if not api_key:
-        return "Hata: Geçerli bir Gemini API anahtarı bulunamadı. Lütfen ayarlardan giriniz."
+        return _("Hata: Geçerli bir Gemini API anahtarı bulunamadı. Lütfen ayarlardan giriniz.")
     
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
     
@@ -54,7 +55,7 @@ def analyze_dom_with_gemini(dom_data):
     except urllib.error.HTTPError as e:
         logger.error(f"Gemini API çağrısı sırasında HTTP Hatası: {e.code} - {e.reason}")
         error_body = e.read().decode('utf-8')
-        return f"Yapay zeka analizi sırasında HTTP {e.code} hatası oluştu: {error_body}"
+        return _("Yapay zeka analizi sırasında HTTP {code} hatası oluştu: {body}").format(code=e.code, body=error_body)
     except Exception as e:
         logger.error(f"Gemini API çağrısı sırasında hata oluştu: {e}")
-        return f"Yapay zeka analizi sırasında beklenmeyen bir hata oluştu: {str(e)}"
+        return _("Yapay zeka analizi sırasında beklenmeyen bir hata oluştu: {error}").format(error=str(e))

@@ -70,7 +70,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
             target_info = {
                 "name": getattr(obj, "name", "") or "",
                 "role": getattr(obj, "roleString", "") or "",
-                "role_value": role_obj.value if role_obj and hasattr(role_obj, "value") else -1
+                "role_value": role_obj.value if role_obj and hasattr(role_obj, "value") else -1,
+                "nvda_selector": self.analyzer.buildDomPath(obj)
             }
             
             if obj.location:
@@ -119,6 +120,47 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
         report = self.reportBuilder.buildReport(obj)
         ui.browseableMessage(report, title=_("Detailed Element Info"), isHtml=True)
+
+    @script(
+        description=_("Analyze current element with AI"),
+        gesture="kb:alt+f1",
+    )
+    def script_analyzeElementAI(self, gesture):
+        from .config import getBool, getConfig
+        if not getBool(getConfig(), "advancedSupport"):
+            gesture.send()
+            return
+
+        # Yalnızca Rapor penceresindeyken çalışsın
+        fg = api.getForegroundObject()
+        is_report = False
+        
+        obj = fg
+        while obj:
+            if obj.name == _("Detailed Element Info"):
+                is_report = True
+                break
+            obj = obj.parent
+
+        if not is_report:
+            gesture.send()
+            return
+
+        ui.message(_("Yapay Zeka analiz ediyor, lütfen bekleyin..."))
+
+        import threading
+        import wx
+        from . import server
+
+        def _run_ai():
+            try:
+                res = server.get_ai_analysis()
+                html_res = f"<html><head><meta http-equiv='x-ua-compatible' content='IE=edge'></head><body><h2>{_('AI Analysis')}</h2><p>{res.replace(chr(10), '<br>')}</p><p><em>{_('Press Esc to close this message')}</em></p></body></html>"
+                wx.CallAfter(ui.browseableMessage, html_res, title=_("AI Analysis"), isHtml=True)
+            except Exception as e:
+                wx.CallAfter(ui.message, _("AI Hatası: {}").format(str(e)))
+        
+        threading.Thread(target=_run_ai, daemon=True).start()
 
     def _getCurrentObject(self):
         """

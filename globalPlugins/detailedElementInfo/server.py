@@ -2,6 +2,8 @@ import json
 import logging
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+import addonHandler
+addonHandler.initTranslation()
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -84,7 +86,7 @@ def request_dom_data_from_clients(target_info=None):
 
 def get_ai_analysis():
     if not latest_dom_data:
-        return "Henüz Chrome eklentisinden herhangi bir DOM verisi alınmadı."
+        return _("Henüz Chrome eklentisinden herhangi bir DOM verisi alınmadı.")
     
     from . import ai_handler
     dom_text = json.dumps(latest_dom_data, indent=2, ensure_ascii=False)

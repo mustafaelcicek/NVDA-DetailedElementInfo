@@ -295,7 +295,7 @@ class ElementAnalyzer:
         nodeId = attrs.get("id", "").strip()
 
         if nodeId:
-            return "{}#{}".format(segment, self._escapeSelectorPart(nodeId))
+            return '{}[id="{}"]'.format(segment, self._escapeSelectorPart(nodeId))
 
         classAttr = attrs.get("class", "").strip()
 
@@ -304,7 +304,7 @@ class ElementAnalyzer:
 
             if classes:
                 classPart = "".join(
-                    ".{}".format(self._escapeSelectorPart(c))
+                    '[class~="{}"]'.format(self._escapeSelectorPart(c))
                     for c in classes[:2]
                 )
                 return "{}{}".format(segment, classPart)
