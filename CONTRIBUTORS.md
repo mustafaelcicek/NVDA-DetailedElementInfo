@@ -20,6 +20,12 @@ contribution is merged, you'll be added.
 |-------------|--------------|
 | **Can Deniz Balkaya** ([@CanDeniz-96](https://github.com/CanDeniz-96)) | Advanced Support features (PR #1): the experimental **Chrome Bridge** local HTTP long-polling server, the **Gemini AI analysis** handler, the Advanced Support settings, and the settings-panel / report-builder / config refactor. |
 
+## Localization contributors
+
+| Contributor | Contribution |
+|-------------|--------------|
+| **George-br** ([@George-br](https://github.com/George-br)) | Ukrainian interface and documentation translation (PR #2), plus the localization report in issue #3. |
+
 ## Ideas, feedback, and support
 
 | Contributor | Contribution |

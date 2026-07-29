@@ -2,14 +2,38 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.0.2]
+## [1.1.0] - 2026-07-29
 
 ### Added
-- **Chrome Bridge (Advanced Support):** Added a dedicated companion Chrome extension (Bridge) for the add-on, letting NVDA access the page's real DOM data, HTML structure, and live properties directly, instead of being limited to the browser's virtual buffer.
-- **AI (Gemini) Analysis:** Added Google Gemini analysis of the collected raw DOM data and ARIA attributes (runs once the DOM data has been retrieved).
-- **Chrome Extension Communication:** Set up a local communication server in the background using `http.server` and `urllib.request`.
-- **Structured HTML Reporting:** Report output moved from plain text to a hierarchical HTML interface (Browseable Message) with clean headings (H1, H2) and structured lists.
-- **Settings Panel Update:** Added "Enable Advanced Support" and "Gemini API Key" options to the NVDA add-on settings.
+
+- **Chrome Bridge:** Added a Manifest V3 companion extension that retrieves the active page's live DOM attributes and properties instead of relying only on NVDA's virtual buffer.
+- **On-demand AI analysis:** Added Google Gemini analysis with Alt+F1, using the user's own API key and responding in the active NVDA language.
+- **Ukrainian localization:** Added complete Ukrainian interface and documentation translations.
+- **Release package:** Tagged releases now include `detailedElementInfo-chrome-bridge.zip` alongside the NVDA add-on package.
 
 ### Changed
-- The reporting interface was enriched to show both NVDA's standard IA2 data and the deeper analysis from Chrome and AI.
+
+- Improved matching between the focused NVDA object and its corresponding DOM element using accessible names, IA2 identifiers, roles, dimensions, and DOM paths.
+- Expanded gettext coverage for settings labels, analyzer statuses, report values, and AI messages.
+- Completed and corrected the Turkish and Ukrainian translations, removing mixed-language report output.
+- Updated Gemini integration to use `gemini-2.5-flash` and request responses in the current NVDA language.
+- Displayed AI results in an escaped, structured HTML report.
+
+### Security
+
+- Redacted password-field values before DOM data leaves the Chrome Bridge.
+- Restricted the local Bridge server to Chrome-extension origins instead of allowing arbitrary browser origins.
+- Escaped AI-generated content before displaying it as HTML.
+
+### Fixed
+
+- Fixed incomplete translation initialization and mixed-language output reported in issue #3.
+- Improved Chrome service-worker reconnection and error handling when the Bridge or active page is unavailable.
+- Prevented generated Python cache files from being included in local add-on packages.
+
+## [1.0.2] - 2026-07-15
+
+### Changed
+
+- Migrated the project to the NV Access add-on template and SCons build system.
+- Moved generated manifests, compiled translations, and HTML documentation into the automated build process.

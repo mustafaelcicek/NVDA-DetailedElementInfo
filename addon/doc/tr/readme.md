@@ -99,7 +99,7 @@ Detaylı Öğe Bilgisi, NVDA'nın sanal belleğinin ötesine geçip sayfanın ge
 
 - Gelişmiş Destek etkinleştirildiğinde, eklenti Chrome uzantısıyla HTTP uzun yoklama (long polling) kullanarak konuşan hafif bir yerel sunucu (`127.0.0.1:63333`) başlatır.
 - Rapor daha sonra Chrome'dan alınan canlı HTML nitelikleri ve özellikleriyle bir **Aktif elementin dom öznitelikleri** bölümü içerir.
-- Eşlik eden uzantıyı kurmak için `chrome://extensions` sayfasını açın, **Geliştirici modu** seçeneğini etkinleştirin, **Paketlenmemiş öğe yükle** düğmesini seçin ve deponun `Bridge` klasörünü gösterin.
+- Eşleşen GitHub sürümünden `detailedElementInfo-chrome-bridge.zip` dosyasını indirip ayıklayın. Ardından `chrome://extensions` sayfasını açın, **Geliştirici modu** seçeneğini etkinleştirin, **Paketlenmemiş öğe yükle** düğmesini seçin ve ayıklanan `Bridge` klasörünü gösterin.
 - Uzantı, eşleştirilen öğeyi inceleyebilmek için web sayfalarında çalışır. `chrome://` sayfaları gibi tarayıcının dahili sayfaları incelenemez.
 - Özellik deneyseldir ve aktif olarak geliştirilmektedir.
 
@@ -144,11 +144,17 @@ Detaylı Öğe Bilgisi; kod katkısı sağlayanların, test edenlerin ve destek�
 
 ## Değişiklik Günlüğü
 
+### Sürüm 1.1.0
+- Canlı DOM verilerini almak için paketlenmiş bir Manifest V3 Chrome Köprüsü eklendi.
+- Alt+F1 ile isteğe bağlı Google Gemini analizi ve NVDA diline uygun yanıtlar eklendi.
+- NVDA ile Chrome arasındaki odaklanılan öğe eşleştirmesi iyileştirildi.
+- Ukraynaca yerelleştirme tamamlandı; Türkçe ve Ukraynaca çıktılardaki karışık dil sorunu düzeltildi.
+- Köprü istekleri Chrome uzantısı kökenleriyle sınırlandırıldı, parola değerleri gizlendi ve yapay zeka çıktısı güvenli biçimde kaçışlandı.
+- Etiketli GitHub sürümlerine ayrı bir Chrome Köprüsü ZIP dosyası eklendi.
+
 ### Sürüm 1.0.2
-- Eklentinin NVDA'nın sanal belleğine bağlı kalmadan sayfanın gerçek DOM verisini okuyabilmesi için deneysel bir Chrome Köprüsü uzantısı eklendi.
-- Google Gemini kullanılarak toplanan DOM/ARIA verilerinin deneysel yapay zeka analizi eklendi.
-- Raporlar artık düz metin yerine yapılandırılmış, hiyerarşik bir HTML görünümünde gösteriliyor.
-- Eklenti ayarlarına "Gelişmiş Desteği Etkinleştir" ve "Gemini API Anahtarı" seçenekleri eklendi.
+- Proje NV Access eklenti şablonuna ve SCons derleme sistemine geçirildi.
+- Manifest, çeviri, belge ve eklenti paketi üretimi otomatikleştirildi.
 
 ### Sürüm 1.0.1 (NVDA 2026.1 Uyumluluğu)
 - NVDA 2026.1 için uyumluluk bilgileri güncellendi

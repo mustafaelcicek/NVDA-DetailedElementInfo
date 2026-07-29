@@ -99,7 +99,7 @@ Detailed Element Info can optionally connect to a companion Chrome extension to 
 
 - When Advanced Support is enabled, the add-on starts a lightweight local server (`127.0.0.1:63333`) that talks to the Chrome extension using HTTP long polling.
 - The report then includes an **Active element's DOM attributes** section with the live HTML attributes and properties fetched from Chrome.
-- To install the companion extension, open `chrome://extensions`, enable **Developer mode**, choose **Load unpacked**, and select the repository's `Bridge` folder.
+- Download `detailedElementInfo-chrome-bridge.zip` from the matching GitHub release and extract it. Then open `chrome://extensions`, enable **Developer mode**, choose **Load unpacked**, and select the extracted `Bridge` folder.
 - The extension runs on web pages so it can inspect the matched element. Browser-internal pages such as `chrome://` pages cannot be inspected.
 - This feature is experimental and under active development.
 
@@ -144,11 +144,17 @@ Detailed Element Info is built with the help of code contributors, testers, and 
 
 ## Changelog
 
+### Version 1.1.0
+- Added a packaged Manifest V3 Chrome Bridge for retrieving live DOM data.
+- Added on-demand Google Gemini analysis with Alt+F1 and locale-aware responses.
+- Improved focused-element matching between NVDA and Chrome.
+- Completed the Ukrainian localization and corrected mixed-language Turkish and Ukrainian output.
+- Restricted Bridge requests to Chrome-extension origins, redacted password values, and escaped AI output.
+- Added a separate Chrome Bridge ZIP to tagged GitHub releases.
+
 ### Version 1.0.2
-- Added an experimental Chrome Bridge companion extension so the add-on can read the page's real DOM data instead of relying only on NVDA's virtual buffer.
-- Added experimental AI analysis of the collected DOM/ARIA data using Google Gemini.
-- Reports are now shown in a structured, hierarchical HTML view instead of plain text.
-- Added "Enable Advanced Support" and "Gemini API Key" options to the add-on settings.
+- Migrated the project to the NV Access add-on template and SCons build system.
+- Automated manifest, translation, documentation, and add-on package generation.
 
 ### Version 1.0.1 (NVDA 2026.1 Compatibility)
 - Updated add-on compatibility metadata for NVDA 2026.1

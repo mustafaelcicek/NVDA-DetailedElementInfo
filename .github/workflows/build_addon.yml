@@ -29,15 +29,11 @@ jobs:
         sudo apt-get install -y gettext
         uv sync
 
-    # Lint / format / type-check via prek. Kept non-blocking for now: the existing
-    # add-on source predates these tools, so failures here should not stop packaging.
-    # Remove `continue-on-error` once the code is brought in line with the checks.
-    - name: Code checks
-      continue-on-error: true
-      run: export PREK_SKIP=no-commit-to-branch; uv run prek run --all-files
-
     - name: building addon
       run: uv run scons && uv run scons pot
+
+    - name: Package Chrome Bridge
+      run: python -m zipfile -c detailedElementInfo-chrome-bridge.zip Bridge
 
     - uses: actions/upload-artifact@v7
       with:
@@ -52,6 +48,20 @@ jobs:
         path: |
           ./*.pot
         archive: false
+
+    - uses: actions/upload-artifact@v7
+      with:
+        name: chrome_bridge
+        path: ./detailedElementInfo-chrome-bridge.zip
+        archive: false
+
+    # Lint / format / type-check via prek. Kept non-blocking for now: the existing
+    # add-on source predates these tools, so failures here should not stop packaging.
+    # Run after packaging because some hooks apply fixes; release artifacts must
+    # contain the exact source from the tag rather than uncommitted hook changes.
+    - name: Code checks
+      continue-on-error: true
+      run: export PREK_SKIP=no-commit-to-branch; uv run prek run --all-files
 
   upload_release:
     runs-on: ubuntu-latest
@@ -71,7 +81,7 @@ jobs:
     - name: Calculate sha256
       run: |
         echo -e "\nSHA256: " >> changelog.md
-        sha256sum *.nvda-addon >> changelog.md
+        sha256sum *.nvda-addon *.zip >> changelog.md
 
     - name: Release
       uses: softprops/action-gh-release@v3
@@ -79,6 +89,7 @@ jobs:
         files: |
           *.nvda-addon
           *.pot
+          *.zip
         body_path: changelog.md
         fail_on_unmatched_files: true
         prerelease: ${{ contains(github.ref, '-') }}

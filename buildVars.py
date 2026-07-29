@@ -22,14 +22,14 @@ addon_info = AddonInfo(
 	# Translators: Long description to be shown for this add-on on add-on information from add-on store
 	addon_description=_("""Shows accessibility, ARIA, and DOM details for the focused HTML element on web pages."""),
 	# version
-	addon_version="1.0.2",
+	addon_version="1.1.0",
 	# Brief changelog for this version
 	# Translators: what's new content for the add-on version to be shown in the add-on store
 	addon_changelog=_("""
-- Added an experimental Chrome Bridge companion extension so the add-on can read the page's real DOM data instead of relying only on NVDA's virtual buffer.
-- Added experimental AI analysis of the collected DOM/ARIA data using Google Gemini.
-- Reports are now shown in a structured, hierarchical HTML view instead of plain text.
-- Added "Enable Advanced Support" and "Gemini API Key" options to the add-on settings.
+- Added a packaged Manifest V3 Chrome Bridge companion extension for retrieving live DOM data.
+- Added on-demand Google Gemini analysis with Alt+F1 and locale-aware responses.
+- Improved DOM element matching, report localization, and Turkish and Ukrainian translation coverage.
+- Hardened the local bridge by restricting browser origins, redacting password values, and escaping AI output.
 """),
 	# Author(s)
 	addon_author="Mustafa Elçiçek <mustafaelcicek5656@gmail.com>",
@@ -70,7 +70,10 @@ i18nSources: list[str] = pythonSources + ["buildVars.py"]
 # Paths are relative to the addon directory, not to the root directory of your addon sources.
 # You can either list every file (using "/" as a path separator,
 # or use glob expressions.
-excludedFiles: list[str] = []
+excludedFiles: list[str] = [
+	"**/__pycache__/**",
+	"**/*.pyc",
+]
 
 # Base language for the NVDA add-on
 # If your add-on is written in a language other than english, modify this variable.
