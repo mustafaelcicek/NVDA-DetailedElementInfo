@@ -23,7 +23,9 @@ def analyze_dom_with_gemini(dom_data):
     if not api_key:
         return _("Hata: Geçerli bir Gemini API anahtarı bulunamadı. Lütfen ayarlardan giriniz.")
     
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
+    model_name = "models/gemini-2.5-flash"
+    
+    url = f"https://generativelanguage.googleapis.com/v1beta/{model_name}:generateContent?key={api_key}"
     
     prompt = f"""
     Aşağıdaki DOM verisini (JS fonksiyonları, CSS yapıları vb. dahil) inceleyerek, 
