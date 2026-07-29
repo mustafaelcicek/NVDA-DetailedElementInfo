@@ -89,7 +89,7 @@ Open **NVDA menu > Preferences > Settings > Detailed Element Info** to configure
 - **Choose which fields to show**: Toggle each field of the report on or off — tag summary, accessible name, name source and confidence, DOM tag and path, explicit / native / NVDA / final roles, semantic source and mismatch, raw IA2 attributes, attributes derived from NVDA states, MSAA role, and ancestor elements.
 - **Select all / Clear all**: Turn every field on or off at once.
 - **Enable Advanced Support (AI and Chrome extension)**: Turns on the experimental Chrome Bridge and AI features described below.
-- **Gemini AI Token**: Enter your own Google Gemini API key so the AI analysis can run.
+- **Gemini API Key**: Enter your own Google Gemini API key so the AI analysis can run.
 
 ## Advanced Support — Chrome Bridge (Experimental)
 
@@ -154,4 +154,3 @@ Detailed Element Info is built with the help of code contributors, testers, and 
 - Show accessible names and sources
 - Detect semantic mismatches
 - Parent element navigation
-

@@ -52,7 +52,7 @@ class BridgeRequestHandler(BaseHTTPRequestHandler):
                     data = json.loads(body)
                     latest_dom_data = data
                 except json.JSONDecodeError:
-                    logger.error("Geçersiz JSON verisi alındı.")
+                    logger.error("Received invalid JSON data.")
             
             self.send_response(200)
             self.send_header('Access-Control-Allow-Origin', '*')
@@ -67,7 +67,7 @@ class BridgeRequestHandler(BaseHTTPRequestHandler):
 def run_server():
     server_address = ('127.0.0.1', 63333)
     httpd = ThreadingHTTPServer(server_address, BridgeRequestHandler)
-    logger.info("HTTP Long-Polling sunucusu 127.0.0.1:63333 adresinde başlatıldı.")
+    logger.info("HTTP long-polling server started at 127.0.0.1:63333.")
     httpd.serve_forever()
 
 def start_server_in_background():
@@ -84,7 +84,7 @@ def request_dom_data_from_clients(target_info=None):
 
 def get_ai_analysis():
     if not latest_dom_data:
-        return "Henüz Chrome eklentisinden herhangi bir DOM verisi alınmadı."
+        return _("No DOM data has been received from the Chrome extension yet.")
     
     from . import ai_handler
     dom_text = json.dumps(latest_dom_data, indent=2, ensure_ascii=False)

@@ -4,85 +4,381 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Detailed Element Info 1.0.0\n"
-"Report-Msgid-Bugs-To: mustafaelcicek5656@gmail.com\n"
-"POT-Creation-Date: 2026-03-19 05:20+0000\n"
-"PO-Revision-Date: 2026-03-19 05:20+0000\n"
+"Project-Id-Version: Detailed Element Info 1.0.2\n"
+"Report-Msgid-Bugs-To: nvda-translations@groups.io\n"
+"POT-Creation-Date: 2026-07-29 16:39+0300\n"
+"PO-Revision-Date: 2026-07-29 16:45+0300\n"
 "Last-Translator: Mustafa Elçiçek <mustafaelcicek5656@gmail.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
+"Language: tr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: tr\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
+#. Add-on summary/title, usually the user visible name of the add-on
+#. Translators: Summary/title for this add-on
+#. to be shown on installation and add-on information found in add-on store
+#: addon/globalPlugins/detailedElementInfo/__init__.py:27
+#: addon/globalPlugins/detailedElementInfo/__init__.py:121
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:46
+#: addon/globalPlugins/detailedElementInfo/settingsPanel.py:30 buildVars.py:20
 msgid "Detailed Element Info"
 msgstr "Detaylı Öğe Bilgisi"
 
+#: addon/globalPlugins/detailedElementInfo/__init__.py:55
 msgid "Show focused element details"
 msgstr "Odaktaki öğenin detaylarını göster"
 
-msgid "Choose which fields to show when element details are displayed."
-msgstr "Öğe bilgileri görüntülenirken hangi alanların gösterileceğini seçin."
-
-msgid "Fields shown in report"
-msgstr "Raporda gösterilen alanlar"
-
-msgid "Select all"
-msgstr "Tümünü işaretle"
-
-msgid "Clear all"
-msgstr "Tümünü kaldır"
-
-msgid "Show tag summary"
-msgstr "Etiket özetini göster"
-
-msgid "Show accessible name"
-msgstr "Erişilebilir adı göster"
-
-msgid "Show name source"
-msgstr "Ad kaynağını göster"
-
-msgid "Show name source confidence"
-msgstr "Ad kaynağı güvenini göster"
-
-msgid "Show DOM tag"
-msgstr "DOM etiketini göster"
-
-msgid "Show computed role"
-msgstr "Hesaplanan rolü göster"
-
-msgid "Show semantic source"
-msgstr "Anlamsal kaynağı göster"
-
-msgid "Show native semantic mismatch"
-msgstr "Yerel anlamsal uyumsuzluğu göster"
-
-msgid "Show raw attributes"
-msgstr "Ham öznitelikleri göster"
-
-msgid "Show MSAA role"
-msgstr "MSAA rolünü göster"
-
-msgid "Show parent elements"
-msgstr "Üst öğeleri göster"
-
+#: addon/globalPlugins/detailedElementInfo/__init__.py:62
+#: addon/globalPlugins/detailedElementInfo/__init__.py:113
 msgid "Element not found"
 msgstr "Öğe bulunamadı"
 
-msgid "This feature only works on web pages"
-msgstr "Bu özellik sadece web sayfalarında çalışır"
+#: addon/globalPlugins/detailedElementInfo/__init__.py:117
+msgid "No HTML or accessibility element information found"
+msgstr "HTML veya erişilebilirlik öğesi bilgisi bulunamadı"
 
+#: addon/globalPlugins/detailedElementInfo/ai_handler.py:22
+msgid "No valid Gemini API key was found. Enter one in the add-on settings."
+msgstr ""
+"Geçerli bir Gemini API anahtarı bulunamadı. Eklenti ayarlarından bir anahtar "
+"girin."
+
+#: addon/globalPlugins/detailedElementInfo/ai_handler.py:63
+#, python-brace-format
+msgid "AI analysis failed with HTTP {code}: {body}"
+msgstr "AI analizi HTTP {code} hatasıyla başarısız oldu: {body}"
+
+#: addon/globalPlugins/detailedElementInfo/ai_handler.py:69
+#, python-brace-format
+msgid "AI analysis failed unexpectedly: {error}"
+msgstr "AI analizi beklenmeyen bir hatayla başarısız oldu: {error}"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:9
+msgid "certain"
+msgstr "kesin"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:10
+msgid "inferred"
+msgstr "çıkarım"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:11
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:116
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:131
+msgid "unknown"
+msgstr "bilinmiyor"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:12
+msgid "related element"
+msgstr "ilişkili öğe"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:13
+msgid "attribute"
+msgstr "nitelik"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:14
+msgid "unknown computed source"
+msgstr "bilinmeyen hesaplanmış kaynak"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:15
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:127
+msgid "none detected"
+msgstr "hiçbiri algılanmadı"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:16
+msgid "redundant explicit role"
+msgstr "gereksiz açık rol"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:17
+msgid "explicit role removes native semantics"
+msgstr "açık rol yerel anlamsal özellikleri kaldırıyor"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:18
+msgid "explicit role overrides native HTML"
+msgstr "açık rol yerel HTML rolünü geçersiz kılıyor"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:19
+msgid "explicit role on non-semantic element"
+msgstr "anlamsal olmayan öğede açık rol"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:20
+msgid "native HTML, context-dependent"
+msgstr "yerel HTML, bağlama bağlı"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:21
+msgid "native HTML"
+msgstr "yerel HTML"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:22
+msgid "no native semantics detected"
+msgstr "yerel anlamsal özellik algılanmadı"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:23
+msgid "not applicable"
+msgstr "uygulanamaz"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:25
+msgid "no native role to mismatch; explicit role used"
+msgstr "karşılaştırılacak yerel rol yok; açık rol kullanıldı"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:27
+msgid "no"
+msgstr "hayır"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:28
+msgid "no; explicit role is redundant"
+msgstr "hayır; açık rol gereksiz"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:30
+msgid "yes; explicit role differs from native role"
+msgstr "evet; açık rol yerel rolden farklı"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:47
+msgid "Request AI comment"
+msgstr "AI yorumu iste"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:49
+msgid "Current element"
+msgstr "Geçerli öğe"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:60
+msgid "Active element DOM attributes"
+msgstr "Etkin öğenin DOM nitelikleri"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:72
+#: addon/globalPlugins/detailedElementInfo/settingsPanel.py:25
+msgid "Ancestor elements"
+msgstr "Üst öğeler"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:75
+#, python-brace-format
+msgid "Ancestor {}"
+msgstr "Üst öğe {}"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:78
 msgid "Press Esc to close this message"
 msgstr "Bu mesajı kapatmak için Esc tuşuna basın"
 
-#, python-format
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:95
+#, python-brace-format
 msgid "{} tag has {} attributes"
-msgstr "{} etiketinin {} parametresi var"
+msgstr "{} etiketi {} niteliğe sahip"
 
-#, python-format
-msgid "{} tag raw attributes:"
-msgstr "{} Etiketinin Raw Öznitelikleri:"
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:100
+msgid "unavailable"
+msgstr "kullanılamıyor"
 
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:102
+msgid "empty"
+msgstr "boş"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:105
+#, python-brace-format
+msgid "Accessible name: {}"
+msgstr "Erişilebilir ad: {}"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:109
+#, python-brace-format
+msgid "Name source: {}"
+msgstr "Ad kaynağı: {}"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:113
+#, python-brace-format
+msgid "Name source confidence: {}"
+msgstr "Ad kaynağı güveni: {}"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:116
+#, python-brace-format
+msgid "DOM tag: {}"
+msgstr "DOM etiketi: {}"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:120
+#, python-brace-format
+msgid "DOM path: {}"
+msgstr "DOM yolu: {}"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:123
+msgid "none"
+msgstr "yok"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:124
+#, python-brace-format
+msgid "Explicit ARIA role: {}"
+msgstr "Açık ARIA rolü: {}"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:128
+#, python-brace-format
+msgid "Native HTML role: {}"
+msgstr "Yerel HTML rolü: {}"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:132
+#, python-brace-format
+msgid "NVDA role: {}"
+msgstr "NVDA rolü: {}"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:136
+#, python-brace-format
+msgid "Final inferred role: {}"
+msgstr "Nihai çıkarılan rol: {}"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:139
+#, python-brace-format
+msgid "Heading level: {}"
+msgstr "Başlık düzeyi: {}"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:143
+#, python-brace-format
+msgid "Semantic source: {}"
+msgstr "Anlamsal kaynak: {}"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:150
+#, python-brace-format
+msgid "Native semantic mismatch: {}"
+msgstr "Yerel anlamsal uyumsuzluk: {}"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:154
+#, python-brace-format
+msgid "MSAA role: {}"
+msgstr "MSAA rolü: {}"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:159
+msgid "Raw IA2 attributes:"
+msgstr "Ham IA2 nitelikleri:"
+
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:165
+msgid "Attributes derived from NVDA states:"
+msgstr "NVDA durumlarından türetilen nitelikler:"
+
+#. Only <ul> and </ul>
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:171
 msgid "No fields selected in settings"
 msgstr "Ayarlarda seçili alan yok"
+
+#: addon/globalPlugins/detailedElementInfo/server.py:87
+msgid "No DOM data has been received from the Chrome extension yet."
+msgstr "Chrome uzantısından henüz DOM verisi alınmadı."
+
+#: addon/globalPlugins/detailedElementInfo/settingsPanel.py:10
+msgid "Tag summary"
+msgstr "Etiket özeti"
+
+#: addon/globalPlugins/detailedElementInfo/settingsPanel.py:11
+msgid "Accessible name"
+msgstr "Erişilebilir ad"
+
+#: addon/globalPlugins/detailedElementInfo/settingsPanel.py:12
+msgid "Name source"
+msgstr "Ad kaynağı"
+
+#: addon/globalPlugins/detailedElementInfo/settingsPanel.py:13
+msgid "Name source confidence"
+msgstr "Ad kaynağı güveni"
+
+#: addon/globalPlugins/detailedElementInfo/settingsPanel.py:14
+msgid "DOM tag"
+msgstr "DOM etiketi"
+
+#: addon/globalPlugins/detailedElementInfo/settingsPanel.py:15
+msgid "DOM path"
+msgstr "DOM yolu"
+
+#: addon/globalPlugins/detailedElementInfo/settingsPanel.py:16
+msgid "Explicit ARIA role"
+msgstr "Açık ARIA rolü"
+
+#: addon/globalPlugins/detailedElementInfo/settingsPanel.py:17
+msgid "Native HTML role"
+msgstr "Yerel HTML rolü"
+
+#: addon/globalPlugins/detailedElementInfo/settingsPanel.py:18
+msgid "NVDA role"
+msgstr "NVDA rolü"
+
+#: addon/globalPlugins/detailedElementInfo/settingsPanel.py:19
+msgid "Final inferred role"
+msgstr "Nihai çıkarılan rol"
+
+#: addon/globalPlugins/detailedElementInfo/settingsPanel.py:20
+msgid "Semantic source"
+msgstr "Anlamsal kaynak"
+
+#: addon/globalPlugins/detailedElementInfo/settingsPanel.py:21
+msgid "Native semantic mismatch"
+msgstr "Yerel anlamsal uyumsuzluk"
+
+#: addon/globalPlugins/detailedElementInfo/settingsPanel.py:22
+msgid "Raw IA2 attributes"
+msgstr "Ham IA2 nitelikleri"
+
+#: addon/globalPlugins/detailedElementInfo/settingsPanel.py:23
+msgid "Attributes derived from NVDA states"
+msgstr "NVDA durumlarından türetilen nitelikler"
+
+#: addon/globalPlugins/detailedElementInfo/settingsPanel.py:24
+msgid "MSAA role"
+msgstr "MSAA rolü"
+
+#: addon/globalPlugins/detailedElementInfo/settingsPanel.py:38
+msgid "Choose which fields to show when element details are displayed."
+msgstr "Öğe bilgileri görüntülenirken hangi alanların gösterileceğini seçin."
+
+#: addon/globalPlugins/detailedElementInfo/settingsPanel.py:54
+msgid "Select all"
+msgstr "Tümünü işaretle"
+
+#: addon/globalPlugins/detailedElementInfo/settingsPanel.py:55
+msgid "Clear all"
+msgstr "Tümünü kaldır"
+
+#: addon/globalPlugins/detailedElementInfo/settingsPanel.py:66
+msgid "Advanced Support and AI"
+msgstr "Gelişmiş Destek ve AI"
+
+#: addon/globalPlugins/detailedElementInfo/settingsPanel.py:74
+msgid "Enable Advanced Support (AI and Chrome extension)"
+msgstr "Gelişmiş Desteği etkinleştir (AI ve Chrome uzantısı)"
+
+#: addon/globalPlugins/detailedElementInfo/settingsPanel.py:80
+msgid "The Chrome extension must be installed to use Advanced Support."
+msgstr "Gelişmiş Desteği kullanmak için Chrome uzantısının kurulması gerekir."
+
+#: addon/globalPlugins/detailedElementInfo/settingsPanel.py:85
+msgid "Gemini API key:"
+msgstr "Gemini API anahtarı:"
+
+#. Add-on description
+#. Translators: Long description to be shown for this add-on on add-on information from add-on store
+#: buildVars.py:23
+msgid ""
+"Shows accessibility, ARIA, and DOM details for the focused HTML element on "
+"web pages."
+msgstr ""
+"Web sayfalarında odaklanılan HTML öğesinin erişilebilirlik, ARIA ve DOM "
+"ayrıntılarını gösterir."
+
+#. Brief changelog for this version
+#. Translators: what's new content for the add-on version to be shown in the add-on store
+#: buildVars.py:28
+msgid ""
+"\n"
+"- Added an experimental Chrome Bridge companion extension so the add-on can "
+"read the page's real DOM data instead of relying only on NVDA's virtual "
+"buffer.\n"
+"- Added experimental AI analysis of the collected DOM/ARIA data using Google "
+"Gemini.\n"
+"- Reports are now shown in a structured, hierarchical HTML view instead of "
+"plain text.\n"
+"- Added \"Enable Advanced Support\" and \"Gemini API Key\" options to the "
+"add-on settings.\n"
+msgstr ""
+"\n"
+"- Eklentinin yalnızca NVDA'nın sanal tamponuna bağlı kalmadan sayfanın "
+"gerçek DOM verilerini okuyabilmesi için deneysel bir Chrome Köprüsü yardımcı "
+"uzantısı eklendi.\n"
+"- Toplanan DOM/ARIA verilerinin Google Gemini ile deneysel AI analizi "
+"eklendi.\n"
+"- Raporlar artık düz metin yerine yapılandırılmış, hiyerarşik bir HTML "
+"görünümünde gösteriliyor.\n"
+"- Eklenti ayarlarına \"Gelişmiş Desteği Etkinleştir\" ve \"Gemini API "
+"Anahtarı\" seçenekleri eklendi.\n"

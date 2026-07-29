@@ -89,7 +89,7 @@ Eklentiyi yapılandırmak için **NVDA menüsü > Tercihler > Ayarlar > Detaylı
 - **Gösterilecek alanları seçme**: Raporun her alanını açıp kapatın — etiket özeti, erişilebilir ad, ad kaynağı ve güveni, DOM etiketi ve yolu, açık / yerel / NVDA / nihai roller, anlamsal kaynak ve uyumsuzluk, ham IA2 nitelikleri, NVDA durumlarından türetilen nitelikler, MSAA rolü ve üst öğeler.
 - **Tümünü seç / Tümünü temizle**: Tüm alanları tek seferde açın veya kapatın.
 - **Gelişmiş Desteği (AI ve Chrome Eklentisi) Etkinleştir**: Aşağıda açıklanan deneysel Chrome Köprüsü ve yapay zeka özelliklerini açar.
-- **Gemini AI Token**: Yapay zeka analizinin çalışabilmesi için kendi Google Gemini API anahtarınızı girin.
+- **Gemini API Anahtarı**: Yapay zeka analizinin çalışabilmesi için kendi Google Gemini API anahtarınızı girin.
 
 ## Gelişmiş Destek — Chrome Köprüsü (Deneysel)
 
@@ -154,4 +154,3 @@ Detaylı Öğe Bilgisi; kod katkısı sağlayanların, test edenlerin ve destek�
 - Erişilebilir adları ve kaynaklarını gösterme
 - Anlamsal uyumsuzlukları algılama
 - Üst öğe navigasyonu
-

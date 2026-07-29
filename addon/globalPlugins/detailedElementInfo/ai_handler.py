@@ -1,4 +1,3 @@
-#Şimdilik bu dosya böyle kalsın, hala net veriyi almak birincil önceliğimiz.
 import logging
 import json
 import urllib.request
@@ -20,16 +19,23 @@ def setup_gemini():
 def analyze_dom_with_gemini(dom_data):
     api_key = get_api_key()
     if not api_key:
-        return "Hata: Geçerli bir Gemini API anahtarı bulunamadı. Lütfen ayarlardan giriniz."
+        return _("No valid Gemini API key was found. Enter one in the add-on settings.")
+
+    try:
+        import languageHandler
+        response_language = languageHandler.getLanguage()
+    except Exception:
+        response_language = "en"
     
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
     
     prompt = f"""
-    Aşağıdaki DOM verisini (JS fonksiyonları, CSS yapıları vb. dahil) inceleyerek, 
-    ekran okuyucu kullanan bir görme engelli kullanıcı için bu web elementinin tam olarak 
-    ne olduğunu, işlevini ve nasıl kullanılabileceğini açıklayıcı ve kısa bir özetle anlat.
-    
-    DOM Verisi:
+    Analyze the following DOM data, including JavaScript functions and CSS properties.
+    Give a short, clear explanation of what the web element is, what it does, and how a
+    screen reader user can interact with it. Respond in the language identified by the
+    locale code "{response_language}".
+
+    DOM data:
     {dom_data}
     """
     
@@ -52,9 +58,12 @@ def analyze_dom_with_gemini(dom_data):
             return text
             
     except urllib.error.HTTPError as e:
-        logger.error(f"Gemini API çağrısı sırasında HTTP Hatası: {e.code} - {e.reason}")
+        logger.error(f"Gemini API request failed: {e.code} - {e.reason}")
         error_body = e.read().decode('utf-8')
-        return f"Yapay zeka analizi sırasında HTTP {e.code} hatası oluştu: {error_body}"
+        return _("AI analysis failed with HTTP {code}: {body}").format(
+            code=e.code,
+            body=error_body,
+        )
     except Exception as e:
-        logger.error(f"Gemini API çağrısı sırasında hata oluştu: {e}")
-        return f"Yapay zeka analizi sırasında beklenmeyen bir hata oluştu: {str(e)}"
+        logger.error(f"Gemini API request failed: {e}")
+        return _("AI analysis failed unexpectedly: {error}").format(error=str(e))
