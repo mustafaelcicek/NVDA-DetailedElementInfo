@@ -27,7 +27,11 @@ def analyze_dom_with_gemini(dom_data):
     except Exception:
         response_language = "en"
     
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
+    model_name = "gemini-2.5-flash"
+    url = (
+        "https://generativelanguage.googleapis.com/v1beta/"
+        f"models/{model_name}:generateContent?key={api_key}"
+    )
     
     prompt = f"""
     Analyze the following DOM data, including JavaScript functions and CSS properties.

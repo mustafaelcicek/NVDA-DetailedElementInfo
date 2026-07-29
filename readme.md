@@ -29,6 +29,7 @@ Detailed Element Info is a utility add-on for NVDA that allows you to inspect HT
 | Shortcut | Action |
 |----------|--------|
 | NVDA+Shift+F1 | Show focused element details |
+| Alt+F1 | Analyze the reported element with AI while the report is open |
 
 > Note: You can change this shortcut from **Preferences > Input Gestures** in NVDA.
 
@@ -45,6 +46,7 @@ Detailed Element Info is a utility add-on for NVDA that allows you to inspect HT
    - All raw IA2 attributes
    - DOM path of the focused element
    - Parent elements up the DOM tree
+4. With Advanced Support enabled, press Alt+F1 while the report is open to request an AI analysis.
 
 
 ## Information Displayed
@@ -97,13 +99,16 @@ Detailed Element Info can optionally connect to a companion Chrome extension to 
 
 - When Advanced Support is enabled, the add-on starts a lightweight local server (`127.0.0.1:63333`) that talks to the Chrome extension using HTTP long polling.
 - The report then includes an **Active element's DOM attributes** section with the live HTML attributes and properties fetched from Chrome.
-- This requires the companion Chrome extension to be installed. The feature is experimental and under active development.
+- To install the companion extension, open `chrome://extensions`, enable **Developer mode**, choose **Load unpacked**, and select the repository's `Bridge` folder.
+- The extension runs on web pages so it can inspect the matched element. Browser-internal pages such as `chrome://` pages cannot be inspected.
+- This feature is experimental and under active development.
 
 ## AI Analysis with Gemini (Experimental)
 
-With Advanced Support enabled and a Gemini API token set, the report offers a **Request AI comment** action.
+With Advanced Support enabled and a Gemini API key set, open an element report and press **Alt+F1** to request an AI analysis.
 
-- The collected DOM data is sent to Google Gemini, which returns a short, plain-language explanation of what the element is, its purpose, and how a screen reader user can interact with it.
+- Only an explicit Alt+F1 request sends the collected DOM data to Google Gemini, which returns a short, plain-language explanation of what the element is, its purpose, and how a screen reader user can interact with it.
+- The Bridge redacts password-field values before returning DOM data, but other element text, attributes, values, and markup may be included. Review the focused element before requesting AI analysis.
 - This requires your own Google Gemini API key, entered in the settings. The feature is experimental.
 
 ## Technical Details

@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "NVDA Detailed Element Info Bridge",
+  "version": "1.0.0",
+  "description": "Connects NVDA Detailed Element Info to the active page DOM.",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    },
+    {
+      "matches": ["<all_urls>"],
+      "js": ["inject.js"],
+      "world": "MAIN"
+    }
+  ],
+  "permissions": [
+    "activeTab"
+  ]
+}

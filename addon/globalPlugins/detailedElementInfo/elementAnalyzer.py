@@ -295,7 +295,7 @@ class ElementAnalyzer:
         nodeId = attrs.get("id", "").strip()
 
         if nodeId:
-            return "{}#{}".format(segment, self._escapeSelectorPart(nodeId))
+            return '{}[id="{}"]'.format(segment, self._escapeSelectorPart(nodeId))
 
         classAttr = attrs.get("class", "").strip()
 
@@ -304,7 +304,7 @@ class ElementAnalyzer:
 
             if classes:
                 classPart = "".join(
-                    ".{}".format(self._escapeSelectorPart(c))
+                    '[class~="{}"]'.format(self._escapeSelectorPart(c))
                     for c in classes[:2]
                 )
                 return "{}{}".format(segment, classPart)
@@ -314,7 +314,7 @@ class ElementAnalyzer:
         if nameAttr:
             return '{}[name="{}"]'.format(
                 segment,
-                nameAttr.replace('"', '\\"'),
+                self._escapeSelectorPart(nameAttr),
             )
 
         roleAttr = attrs.get("xml-roles", "").strip()
@@ -322,7 +322,7 @@ class ElementAnalyzer:
         if roleAttr:
             return '{}[role="{}"]'.format(
                 segment,
-                roleAttr.replace('"', '\\"'),
+                self._escapeSelectorPart(roleAttr),
             )
 
         return segment
@@ -372,7 +372,7 @@ class ElementAnalyzer:
         return None
 
     def _escapeSelectorPart(self, value):
-        return str(value).replace('"', '\\"')
+        return str(value).replace("\\", "\\\\").replace('"', '\\"')
 
     def _logDebug(self, message):
         if log is not None:

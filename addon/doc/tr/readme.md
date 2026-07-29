@@ -29,6 +29,7 @@ Detaylı Öğe Bilgisi, NVDA için HTML öğelerini incelemenize ve bunların er
 | Kısayol | İşlem |
 |---------|-------|
 | NVDA+Shift+F1 | Odaktaki öğenin detaylarını göster |
+| Alt+F1 | Rapor açıkken bildirilen öğeyi AI ile analiz et |
 
 > Not: Bu kısayolu NVDA menüsünden **Tercihler > Girdi Hareketleri** bölümünden değiştirebilirsiniz.
 
@@ -45,6 +46,7 @@ Detaylı Öğe Bilgisi, NVDA için HTML öğelerini incelemenize ve bunların er
    - Tüm ham IA2 nitelikleri
    - Odaktaki öğenin DOM yolu
    - DOM ağacındaki üst öğeler
+4. Gelişmiş Destek etkinken, AI analizi istemek için rapor açıkken Alt+F1 tuşlarına basın.
 
 
 ## Görüntülenen Bilgiler
@@ -97,13 +99,16 @@ Detaylı Öğe Bilgisi, NVDA'nın sanal belleğinin ötesine geçip sayfanın ge
 
 - Gelişmiş Destek etkinleştirildiğinde, eklenti Chrome uzantısıyla HTTP uzun yoklama (long polling) kullanarak konuşan hafif bir yerel sunucu (`127.0.0.1:63333`) başlatır.
 - Rapor daha sonra Chrome'dan alınan canlı HTML nitelikleri ve özellikleriyle bir **Aktif elementin dom öznitelikleri** bölümü içerir.
-- Bu özellik, eşlik eden Chrome uzantısının kurulu olmasını gerektirir. Özellik deneyseldir ve aktif olarak geliştirilmektedir.
+- Eşlik eden uzantıyı kurmak için `chrome://extensions` sayfasını açın, **Geliştirici modu** seçeneğini etkinleştirin, **Paketlenmemiş öğe yükle** düğmesini seçin ve deponun `Bridge` klasörünü gösterin.
+- Uzantı, eşleştirilen öğeyi inceleyebilmek için web sayfalarında çalışır. `chrome://` sayfaları gibi tarayıcının dahili sayfaları incelenemez.
+- Özellik deneyseldir ve aktif olarak geliştirilmektedir.
 
 ## Gemini ile Yapay Zeka Analizi (Deneysel)
 
-Gelişmiş Destek etkinken ve bir Gemini API anahtarı girildiğinde, rapor bir **AI Yorumu iste** eylemi sunar.
+Gelişmiş Destek etkinken ve bir Gemini API anahtarı girildiğinde, öğe raporunu açıp AI analizi istemek için **Alt+F1** tuşlarına basın.
 
-- Toplanan DOM verisi Google Gemini'ye gönderilir ve Gemini, öğenin ne olduğunu, amacını ve bir ekran okuyucu kullanıcısının onunla nasıl etkileşime girebileceğini kısa ve sade bir dille açıklar.
+- Toplanan DOM verisi yalnızca açık bir Alt+F1 isteğinden sonra Google Gemini'ye gönderilir ve Gemini, öğenin ne olduğunu, amacını ve bir ekran okuyucu kullanıcısının onunla nasıl etkileşime girebileceğini kısa ve sade bir dille açıklar.
+- Bridge, DOM verisini döndürmeden önce parola alanı değerlerini gizler; ancak diğer öğe metinleri, nitelikleri, değerleri ve işaretlemeleri dahil edilebilir. AI analizi istemeden önce odaktaki öğeyi kontrol edin.
 - Bu, ayarlarda girilen kendi Google Gemini API anahtarınızı gerektirir. Özellik deneyseldir.
 
 ## Teknik Ayrıntılar

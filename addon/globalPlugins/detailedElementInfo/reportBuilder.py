@@ -44,8 +44,6 @@ class ReportBuilder:
             "<head><meta http-equiv='x-ua-compatible' content='IE=edge'></head>",
             "<body>",
             f"<h1>{_('Detailed Element Info')}</h1>",
-            f"<a href='#' role='button' id='ai-btn' style='display: inline-block; padding: 5px 10px; background-color: #f0f0f0; border: 1px solid #ccc; text-decoration: none; color: black;'>{_('Request AI comment')}</a>",
-            "<div id='ai-result' style='margin-top: 10px; font-weight: bold;'></div>",
             f"<h2>{_('Current element')}</h2>"
         ]
 

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Detailed Element Info 1.0.2\n"
 "Report-Msgid-Bugs-To: nvda-translations@groups.io\n"
-"POT-Creation-Date: 2026-07-29 16:39+0300\n"
+"POT-Creation-Date: 2026-07-29 16:49+0300\n"
 "PO-Revision-Date: 2026-07-29 16:45+0300\n"
 "Last-Translator: Георгій Галас\n"
 "Language-Team: Ukrainian\n"
@@ -19,7 +19,8 @@ msgstr ""
 #. Translators: Summary/title for this add-on
 #. to be shown on installation and add-on information found in add-on store
 #: addon/globalPlugins/detailedElementInfo/__init__.py:27
-#: addon/globalPlugins/detailedElementInfo/__init__.py:121
+#: addon/globalPlugins/detailedElementInfo/__init__.py:119
+#: addon/globalPlugins/detailedElementInfo/__init__.py:169
 #: addon/globalPlugins/detailedElementInfo/reportBuilder.py:46
 #: addon/globalPlugins/detailedElementInfo/settingsPanel.py:30 buildVars.py:20
 msgid "Detailed Element Info"
@@ -30,25 +31,48 @@ msgid "Show focused element details"
 msgstr "Показати деталі елемента у фокусі"
 
 #: addon/globalPlugins/detailedElementInfo/__init__.py:62
-#: addon/globalPlugins/detailedElementInfo/__init__.py:113
+#: addon/globalPlugins/detailedElementInfo/__init__.py:111
 msgid "Element not found"
 msgstr "Елемент не знайдено"
 
-#: addon/globalPlugins/detailedElementInfo/__init__.py:117
+#: addon/globalPlugins/detailedElementInfo/__init__.py:115
 msgid "No HTML or accessibility element information found"
 msgstr "Не знайдено HTML-інформацію або інформацію про елементи доступності"
+
+#: addon/globalPlugins/detailedElementInfo/__init__.py:122
+msgid "Analyze current element with AI"
+msgstr "Проаналізувати поточний елемент за допомогою ШІ"
+
+#: addon/globalPlugins/detailedElementInfo/__init__.py:137
+msgid "AI is analyzing. Please wait."
+msgstr "ШІ виконує аналіз. Зачекайте."
+
+#: addon/globalPlugins/detailedElementInfo/__init__.py:150
+#: addon/globalPlugins/detailedElementInfo/__init__.py:156
+msgid "AI Analysis"
+msgstr "Аналіз ШІ"
+
+#: addon/globalPlugins/detailedElementInfo/__init__.py:151
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:76
+msgid "Press Esc to close this message"
+msgstr "Натисніть Esc, щоб закрити це повідомлення"
+
+#: addon/globalPlugins/detailedElementInfo/__init__.py:160
+#, python-brace-format
+msgid "AI error: {}"
+msgstr "Помилка ШІ: {}"
 
 #: addon/globalPlugins/detailedElementInfo/ai_handler.py:22
 msgid "No valid Gemini API key was found. Enter one in the add-on settings."
 msgstr ""
 "Не знайдено дійсного ключа API Gemini. Введіть його в налаштуваннях додатка."
 
-#: addon/globalPlugins/detailedElementInfo/ai_handler.py:63
+#: addon/globalPlugins/detailedElementInfo/ai_handler.py:67
 #, python-brace-format
 msgid "AI analysis failed with HTTP {code}: {body}"
 msgstr "Не вдалося виконати аналіз ШІ через помилку HTTP {code}: {body}"
 
-#: addon/globalPlugins/detailedElementInfo/ai_handler.py:69
+#: addon/globalPlugins/detailedElementInfo/ai_handler.py:73
 #, python-brace-format
 msgid "AI analysis failed unexpectedly: {error}"
 msgstr "Неочікувана помилка аналізу ШІ: {error}"
@@ -62,8 +86,8 @@ msgid "inferred"
 msgstr "ймовірне"
 
 #: addon/globalPlugins/detailedElementInfo/reportBuilder.py:11
-#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:116
-#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:131
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:114
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:129
 msgid "unknown"
 msgstr "невідомо"
 
@@ -80,7 +104,7 @@ msgid "unknown computed source"
 msgstr "невідоме обчислене джерело"
 
 #: addon/globalPlugins/detailedElementInfo/reportBuilder.py:15
-#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:127
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:125
 msgid "none detected"
 msgstr "нічого не виявлено"
 
@@ -133,123 +157,115 @@ msgid "yes; explicit role differs from native role"
 msgstr "так; явна роль відрізняється від нативної"
 
 #: addon/globalPlugins/detailedElementInfo/reportBuilder.py:47
-msgid "Request AI comment"
-msgstr "Запитати коментар ШІ"
-
-#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:49
 msgid "Current element"
 msgstr "Поточний елемент"
 
-#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:60
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:58
 msgid "Active element DOM attributes"
 msgstr "DOM-атрибути активного елемента"
 
-#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:72
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:70
 #: addon/globalPlugins/detailedElementInfo/settingsPanel.py:25
 msgid "Ancestor elements"
 msgstr "Батьківські елементи вищих рівнів"
 
-#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:75
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:73
 #, python-brace-format
 msgid "Ancestor {}"
 msgstr "Батьківський {}"
 
-#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:78
-msgid "Press Esc to close this message"
-msgstr "Натисніть Esc, щоб закрити це повідомлення"
-
-#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:95
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:93
 #, python-brace-format
 msgid "{} tag has {} attributes"
 msgstr "Тег {} має {} атрибутів"
 
-#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:100
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:98
 msgid "unavailable"
 msgstr "недоступно"
 
-#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:102
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:100
 msgid "empty"
 msgstr "порожньо"
 
-#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:105
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:103
 #, python-brace-format
 msgid "Accessible name: {}"
 msgstr "Доступна назва: {}"
 
-#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:109
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:107
 #, python-brace-format
 msgid "Name source: {}"
 msgstr "Джерело назви: {}"
 
-#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:113
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:111
 #, python-brace-format
 msgid "Name source confidence: {}"
 msgstr "Надійність джерела назви: {}"
 
-#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:116
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:114
 #, python-brace-format
 msgid "DOM tag: {}"
 msgstr "Тег DOM: {}"
 
-#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:120
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:118
 #, python-brace-format
 msgid "DOM path: {}"
 msgstr "Шлях DOM: {}"
 
-#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:123
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:121
 msgid "none"
 msgstr "немає"
 
-#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:124
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:122
 #, python-brace-format
 msgid "Explicit ARIA role: {}"
 msgstr "Явна роль ARIA: {}"
 
-#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:128
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:126
 #, python-brace-format
 msgid "Native HTML role: {}"
 msgstr "Нативна роль HTML: {}"
 
-#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:132
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:130
 #, python-brace-format
 msgid "NVDA role: {}"
 msgstr "Роль NVDA: {}"
 
-#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:136
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:134
 #, python-brace-format
 msgid "Final inferred role: {}"
 msgstr "Остаточна визначена роль: {}"
 
-#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:139
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:137
 #, python-brace-format
 msgid "Heading level: {}"
 msgstr "Рівень заголовка: {}"
 
-#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:143
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:141
 #, python-brace-format
 msgid "Semantic source: {}"
 msgstr "Семантичне джерело: {}"
 
-#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:150
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:148
 #, python-brace-format
 msgid "Native semantic mismatch: {}"
 msgstr "Невідповідність нативної семантики: {}"
 
-#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:154
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:152
 #, python-brace-format
 msgid "MSAA role: {}"
 msgstr "Роль MSAA: {}"
 
-#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:159
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:157
 msgid "Raw IA2 attributes:"
 msgstr "Необроблені атрибути IA2:"
 
-#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:165
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:163
 msgid "Attributes derived from NVDA states:"
 msgstr "Атрибути, отримані зі станів NVDA:"
 
 #. Only <ul> and </ul>
-#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:171
+#: addon/globalPlugins/detailedElementInfo/reportBuilder.py:169
 msgid "No fields selected in settings"
 msgstr "У налаштуваннях не вибрано жодного поля"
 
