@@ -76,6 +76,7 @@ jobs:
       with:
         path: .
         merge-multiple: true
+        skip-decompress: true
     - name: Display structure of downloaded files
       run: ls -R
     - name: Calculate sha256
