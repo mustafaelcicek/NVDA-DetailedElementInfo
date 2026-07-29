@@ -26,6 +26,11 @@ dependencies = []
 [project.urls]
 Repository = "https://github.com/mustafaelcicek/NVDA-DetailedElementInfo"
 
+# This repository uses Python only for build tooling; the add-on and companion
+# extension are packaged by SCons and the release workflow, not by setuptools.
+[tool.setuptools]
+packages = []
+
 # PEP 735 dependency groups. `uv sync` installs the `dev` group by default, which
 # pulls in every tool needed to build, translate, and lint the add-on.
 [dependency-groups]
