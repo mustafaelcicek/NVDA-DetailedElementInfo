@@ -314,7 +314,7 @@ class ElementAnalyzer:
         if nameAttr:
             return '{}[name="{}"]'.format(
                 segment,
-                nameAttr.replace('"', '\\"'),
+                self._escapeSelectorPart(nameAttr),
             )
 
         roleAttr = attrs.get("xml-roles", "").strip()
@@ -322,7 +322,7 @@ class ElementAnalyzer:
         if roleAttr:
             return '{}[role="{}"]'.format(
                 segment,
-                roleAttr.replace('"', '\\"'),
+                self._escapeSelectorPart(roleAttr),
             )
 
         return segment
@@ -372,7 +372,7 @@ class ElementAnalyzer:
         return None
 
     def _escapeSelectorPart(self, value):
-        return str(value).replace('"', '\\"')
+        return str(value).replace("\\", "\\\\").replace('"', '\\"')
 
     def _logDebug(self, message):
         if log is not None:
