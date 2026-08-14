@@ -16,20 +16,12 @@ Detaylı Öğe Bilgisi, NVDA için HTML öğelerini incelemenize ve bunların er
 - **Üst Öğe Navigasyonu**: Belge yapısını anlamak için üst öğeler arasında gezinme
 - **Durum Takibi**: Öğe durumlarını (genişletilmiş, işaretli, seçili vb.) ARIA nitelikleri olarak görüntüleme
 - **Kaynak Algılaması**: Erişilebilir adların nereden geldiğini anlama (aria-label, içerik, alt, başlık vb.)
-- **Ad Kaynağı Güveni**: Erişilebilir adın nereden geldiği konusunda eklentinin ne kadar emin olduğunu görme (kesin, çıkarım, bilinmiyor)
-- **Çoklu Rol Görünümü**: Açık ARIA rolünü, yerel HTML rolünü, NVDA rolünü ve nihai çıkarılan rolü yan yana karşılaştırma
-- **MSAA Rolü ve Başlık Düzeyi**: Ham MSAA rolünü ve başlıklar için başlık düzeyini görüntüleme
-- **Durumdan Türetilen Nitelikler**: NVDA durumlarından türetilen ARIA benzeri nitelikleri görme (genişletilmiş, işaretli, seçili vb.)
-- **Yapılandırılabilir Alanlar**: Raporda hangi alanların görüneceğini eklenti ayarlarından seçme; Tümünü seç / Tümünü temizle düğmeleriyle
-- **Gelişmiş Destek — Chrome Köprüsü (Deneysel)**: Sayfanın gerçek DOM verisine, HTML niteliklerine ve aktif özelliklerine doğrudan erişmek için eşlik eden bir Chrome uzantısına bağlanma
-- **Gemini ile Yapay Zeka Analizi (Deneysel)**: Odaktaki öğenin ne olduğunu ve nasıl kullanılabileceğini sade bir dille açıklaması için Google Gemini'ye sorma
 
 ## Klavye Kısayolları
 
 | Kısayol | İşlem |
 |---------|-------|
 | NVDA+Shift+F1 | Odaktaki öğenin detaylarını göster |
-| Alt+F1 | Rapor açıkken bildirilen öğeyi AI ile analiz et |
 
 > Not: Bu kısayolu NVDA menüsünden **Tercihler > Girdi Hareketleri** bölümünden değiştirebilirsiniz.
 
@@ -46,7 +38,6 @@ Detaylı Öğe Bilgisi, NVDA için HTML öğelerini incelemenize ve bunların er
    - Tüm ham IA2 nitelikleri
    - Odaktaki öğenin DOM yolu
    - DOM ağacındaki üst öğeler
-4. Gelişmiş Destek etkinken, AI analizi istemek için rapor açıkken Alt+F1 tuşlarına basın.
 
 
 ## Görüntülenen Bilgiler
@@ -84,42 +75,13 @@ Açık bir ARIA rolünün öğenin yerel HTML anlamsal özellikleriyle çelişip
 ### DOM Yolu
 Öğenin sayfa yapısındaki konumunu hızlıca anlamanızı sağlayan kısa teknik yol (örnek: `main > form#login > input[name="email"]`).
 
-## Ayarlar
-
-Eklentiyi yapılandırmak için **NVDA menüsü > Tercihler > Ayarlar > Detaylı Öğe Bilgisi** bölümünü açın:
-
-- **Gösterilecek alanları seçme**: Raporun her alanını açıp kapatın — etiket özeti, erişilebilir ad, ad kaynağı ve güveni, DOM etiketi ve yolu, açık / yerel / NVDA / nihai roller, anlamsal kaynak ve uyumsuzluk, ham IA2 nitelikleri, NVDA durumlarından türetilen nitelikler, MSAA rolü ve üst öğeler.
-- **Tümünü seç / Tümünü temizle**: Tüm alanları tek seferde açın veya kapatın.
-- **Gelişmiş Desteği (AI ve Chrome Eklentisi) Etkinleştir**: Aşağıda açıklanan deneysel Chrome Köprüsü ve yapay zeka özelliklerini açar.
-- **Gemini API Anahtarı**: Yapay zeka analizinin çalışabilmesi için kendi Google Gemini API anahtarınızı girin.
-
-## Gelişmiş Destek — Chrome Köprüsü (Deneysel)
-
-Detaylı Öğe Bilgisi, NVDA'nın sanal belleğinin ötesine geçip sayfanın gerçek DOM'unu okumak için isteğe bağlı olarak eşlik eden bir Chrome uzantısına bağlanabilir.
-
-- Gelişmiş Destek etkinleştirildiğinde, eklenti Chrome uzantısıyla HTTP uzun yoklama (long polling) kullanarak konuşan hafif bir yerel sunucu (`127.0.0.1:63333`) başlatır.
-- Rapor daha sonra Chrome'dan alınan canlı HTML nitelikleri ve özellikleriyle bir **Aktif elementin dom öznitelikleri** bölümü içerir.
-- Eşleşen GitHub sürümünden `detailedElementInfo-chrome-bridge.zip` dosyasını indirip ayıklayın. Ardından `chrome://extensions` sayfasını açın, **Geliştirici modu** seçeneğini etkinleştirin, **Paketlenmemiş öğe yükle** düğmesini seçin ve ayıklanan `Bridge` klasörünü gösterin.
-- Uzantı, eşleştirilen öğeyi inceleyebilmek için web sayfalarında çalışır. `chrome://` sayfaları gibi tarayıcının dahili sayfaları incelenemez.
-- Özellik deneyseldir ve aktif olarak geliştirilmektedir.
-
-## Gemini ile Yapay Zeka Analizi (Deneysel)
-
-Gelişmiş Destek etkinken ve bir Gemini API anahtarı girildiğinde, öğe raporunu açıp AI analizi istemek için **Alt+F1** tuşlarına basın.
-
-- Toplanan DOM verisi yalnızca açık bir Alt+F1 isteğinden sonra Google Gemini'ye gönderilir ve Gemini, öğenin ne olduğunu, amacını ve bir ekran okuyucu kullanıcısının onunla nasıl etkileşime girebileceğini kısa ve sade bir dille açıklar.
-- Bridge, DOM verisini döndürmeden önce parola alanı değerlerini gizler; ancak diğer öğe metinleri, nitelikleri, değerleri ve işaretlemeleri dahil edilebilir. AI analizi istemeden önce odaktaki öğeyi kontrol edin.
-- Bu, ayarlarda girilen kendi Google Gemini API anahtarınızı gerektirir. Özellik deneyseldir.
-
 ## Teknik Ayrıntılar
 
-Bu eklenti **sıfır bağımlılıklı yerel bir mimari** kullanır:
-- `pip` bağımlılık sorunlarından kaçınmak için saf Python standart kütüphaneleri (`http.server`, `urllib.request`)
+Bu eklenti şunları kullanır:
 - IAccessible2 (IA2) arayüzleri erişilebilirlik nitelikleri için
 - NVDA'nın nesne modeli ve kontrol türleri
 - WAI-ARIA 1.2 spesifikasyonları
 - Windows MSAA rolleri
-- HTTP uzun yoklama: eşlik eden Chrome uzantısının Manifest V3 hizmet çalışanına (service worker), içerik betiği sinyalleriyle canlı tutulan hafif bir köprü
 
 ## Desteklenen NVDA Sürümleri
 
@@ -136,25 +98,14 @@ GPL-2.0
 
 ## Katkı Sağlama
 
-Katkılar hoş karşılanır! Hataları bildirmeden, iyileştirmeler önermeden veya bir çekme isteği (pull request) açmadan önce lütfen proje deposundaki Katkı Kılavuzu'nu (`CONTRIBUTING.md`) okuyun.
+Katkılar hoş karşılanır! Lütfen hataları bildirin ve iyileştirmeler önerin.
 
 ## Katkı Sağlayanlar
 
-Detaylı Öğe Bilgisi; kod katkısı sağlayanların, test edenlerin ve destekçilerin yardımıyla geliştirilmektedir. Katkı sağlayanların tam listesi ve her birinin üzerinde çalıştığı konular için proje deposundaki `CONTRIBUTORS.md` dosyasına bakın.
+- **Değerli abim Uğur Gürbüz'e** — Kıymetli destekleri ve yapıcı fikirleri için teşekkür ederim.
+- **Google Gemini ve GitHub Copilot'a** — Bir NVDA eklentisi geliştirecek düzeyde kodlama bilgim olmasa da, fikirden çalışır hale gelene kadar tüm süreçte bana yol gösteren, kod yazımından hata çözümüne kadar her aşamada destek olan yapay zekâ asistanları Google Gemini ve GitHub Copilot’a teşekkür ederim.
 
 ## Değişiklik Günlüğü
-
-### Sürüm 1.1.0
-- Canlı DOM verilerini almak için paketlenmiş bir Manifest V3 Chrome Köprüsü eklendi.
-- Alt+F1 ile isteğe bağlı Google Gemini analizi ve NVDA diline uygun yanıtlar eklendi.
-- NVDA ile Chrome arasındaki odaklanılan öğe eşleştirmesi iyileştirildi.
-- Ukraynaca yerelleştirme tamamlandı; Türkçe ve Ukraynaca çıktılardaki karışık dil sorunu düzeltildi.
-- Köprü istekleri Chrome uzantısı kökenleriyle sınırlandırıldı, parola değerleri gizlendi ve yapay zeka çıktısı güvenli biçimde kaçışlandı.
-- Etiketli GitHub sürümlerine ayrı bir Chrome Köprüsü ZIP dosyası eklendi.
-
-### Sürüm 1.0.2
-- Proje NV Access eklenti şablonuna ve SCons derleme sistemine geçirildi.
-- Manifest, çeviri, belge ve eklenti paketi üretimi otomatikleştirildi.
 
 ### Sürüm 1.0.1 (NVDA 2026.1 Uyumluluğu)
 - NVDA 2026.1 için uyumluluk bilgileri güncellendi
@@ -165,3 +116,4 @@ Detaylı Öğe Bilgisi; kod katkısı sağlayanların, test edenlerin ve destek�
 - Erişilebilir adları ve kaynaklarını gösterme
 - Anlamsal uyumsuzlukları algılama
 - Üst öğe navigasyonu
+

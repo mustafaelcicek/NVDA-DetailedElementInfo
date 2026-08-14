@@ -62,6 +62,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
             ui.message(_("Element not found"))
             return
 
+#aşağıdaki kısım değişecek, birkaç şey denedim ama verim alamadım.
+#amacım tree'de olan elementi chrom'a gönderip ordan eşleştirme yapmaktı.
         from .config import getBool, getConfig
         if getBool(getConfig(), "advancedSupport"):
             role_obj = getattr(obj, "role", None)
@@ -69,14 +71,14 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
                 "name": getattr(obj, "name", "") or "",
                 "role": getattr(obj, "roleString", "") or "",
                 "role_value": role_obj.value if role_obj and hasattr(role_obj, "value") else -1,
-                "nvda_selector": self.analyzer.buildDomPath(obj),
+                "nvda_selector": self.analyzer.buildDomPath(obj)
             }
             
             if obj.location:
                 target_info["width"] = obj.location[2]
                 target_info["height"] = obj.location[3]
                 
-            # Include IA2 identifiers to improve matching in the Chrome extension.
+            # IA2 özelliklerinden tag, id, class gibi DOM bilgilerini çek
             try:
                 attrs = {}
                 if hasattr(obj, "IAccessible2Attributes"):
@@ -102,6 +104,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
             wx.CallLater(300, self._showReportDelayed)
         else:
             self._showReportDelayed()
+#gecikmeyi bilerek ekledim, diğer türlü odak direkt değişip element bilgisi çekmiyodu eklenti.
 
 
     def _showReportDelayed(self):
@@ -121,58 +124,43 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
     @script(
         description=_("Analyze current element with AI"),
         gesture="kb:alt+f1",
-        speakOnDemand=True,
     )
     def script_analyzeElementAI(self, gesture):
         from .config import getBool, getConfig
-
         if not getBool(getConfig(), "advancedSupport"):
             gesture.send()
             return
 
-        if not self._isElementInfoReportOpen():
+        # Yalnızca Rapor penceresindeyken çalışsın
+        fg = api.getForegroundObject()
+        is_report = False
+        
+        obj = fg
+        while obj:
+            if obj.name == _("Detailed Element Info"):
+                is_report = True
+                break
+            obj = obj.parent
+
+        if not is_report:
             gesture.send()
             return
 
-        ui.message(_("AI is analyzing. Please wait."))
+        ui.message(_("Yapay Zeka analiz ediyor, lütfen bekleyin..."))
 
-        import html
         import threading
         import wx
         from . import server
 
-        def runAnalysis():
+        def _run_ai():
             try:
-                result = server.get_ai_analysis()
-                escapedResult = html.escape(str(result)).replace("\n", "<br>")
-                report = (
-                    "<html><head><meta http-equiv='x-ua-compatible' content='IE=edge'></head>"
-                    f"<body><h2>{_('AI Analysis')}</h2><p>{escapedResult}</p>"
-                    f"<p><em>{_('Press Esc to close this message')}</em></p></body></html>"
-                )
-                wx.CallAfter(
-                    ui.browseableMessage,
-                    report,
-                    title=_("AI Analysis"),
-                    isHtml=True,
-                )
-            except Exception as error:
-                wx.CallAfter(ui.message, _("AI error: {}").format(str(error)))
-
-        threading.Thread(target=runAnalysis, daemon=True).start()
-
-    def _isElementInfoReportOpen(self):
-        obj = api.getForegroundObject()
-
-        while obj is not None:
-            try:
-                if obj.name == _("Detailed Element Info"):
-                    return True
-                obj = obj.parent
-            except Exception:
-                return False
-
-        return False
+                res = server.get_ai_analysis()
+                html_res = f"<html><head><meta http-equiv='x-ua-compatible' content='IE=edge'></head><body><h2>{_('AI Analysis')}</h2><p>{res.replace(chr(10), '<br>')}</p><p><em>{_('Press Esc to close this message')}</em></p></body></html>"
+                wx.CallAfter(ui.browseableMessage, html_res, title=_("AI Analysis"), isHtml=True)
+            except Exception as e:
+                wx.CallAfter(ui.message, _("AI Hatası: {}").format(str(e)))
+        
+        threading.Thread(target=_run_ai, daemon=True).start()
 
     def _getCurrentObject(self):
         """

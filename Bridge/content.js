@@ -1,248 +1,165 @@
+
 setInterval(() => {
     try {
-        chrome.runtime.sendMessage({action: "ping"}, () => {
-            // Reading lastError prevents Chrome from logging a noisy rejected callback.
-            void chrome.runtime.lastError;
+        chrome.runtime.sendMessage({ action: "ping" }, () => {
+            if (chrome.runtime.lastError) {
+                
+            }
         });
-    } catch (_error) {
-        // The service worker will be retried by Chrome.
-    }
+    } catch (e) {}
 }, 10000);
 
-function findBestElement(elements, target) {
-    const targetName = (target.name || "").trim().toLowerCase();
-    const compactTargetName = targetName.replace(/\s+/g, "");
-    const targetTag = (target.tag || "").toLowerCase();
-    const targetId = target.id || "";
-    const targetClass = target.class || "";
-    const targetWidth = target.width || 0;
-    const targetHeight = target.height || 0;
-    const roleValue = target.role_value ?? -1;
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === "get_active_element") {
+        let el = null;
+        
+        
+        if (request.target) {
+            let target = request.target;
+            let targetName = (target.name || "").trim().toLowerCase();
+            let brutalTargetName = targetName.replace(/\s+/g, "");
+            let targetTag = (target.tag || "").toLowerCase();
+            let targetId = target.id || "";
+            let targetClass = target.class || "";
+            let targetWidth = target.width || 0;
+            let targetHeight = target.height || 0;
+            let roleValue = target.role_value || -1;
+            let nvdaSelector = target.nvda_selector || "";
+            
+            let bestScore = -1;
 
-    let bestElement = null;
-    let bestScore = -1;
+            function findBestIn(elements) {
+                let bestE = null;
+                let currentBestScore = -1;
 
-    for (const element of elements) {
-        let score = 0;
-        const tagName = element.tagName.toLowerCase();
-        const elementName = (
-            element.innerText
-            || element.getAttribute("aria-label")
-            || element.getAttribute("title")
-            || element.value
-            || ""
-        ).toLowerCase();
-        const compactElementName = elementName.replace(/\s+/g, "");
+                for (let e of elements) {
+                    let score = 0;
+                    let tagName = e.tagName.toLowerCase();
+                    
+                    let eName = (e.innerText || e.getAttribute('aria-label') || e.getAttribute('title') || e.value || "").toLowerCase();
+                    let brutalEName = eName.replace(/\s+/g, "");
+                    
+                    if (brutalTargetName && brutalEName) {
+                        if (brutalEName === brutalTargetName) score += 1000;
+                        else if (brutalEName.includes(brutalTargetName) || brutalTargetName.includes(brutalEName)) score += 500;
+                    }
 
-        if (compactTargetName && compactElementName) {
-            if (compactElementName === compactTargetName) {
-                score += 1000;
-            } else if (
-                compactElementName.includes(compactTargetName)
-                || compactTargetName.includes(compactElementName)
-            ) {
-                score += 500;
-            }
-        }
+                    
+                    if (targetWidth > 0 && targetHeight > 0) {
+                        let rect = e.getBoundingClientRect();
+                        let physicalWidth = rect.width * window.devicePixelRatio;
+                        let physicalHeight = rect.height * window.devicePixelRatio;
+                        
+                        if (Math.abs(physicalWidth - targetWidth) <= 5 && Math.abs(physicalHeight - targetHeight) <= 5) {
+                            score += 60; 
+                        }
+                    }
 
-        if (targetWidth > 0 && targetHeight > 0) {
-            const rect = element.getBoundingClientRect();
-            const physicalWidth = rect.width * window.devicePixelRatio;
-            const physicalHeight = rect.height * window.devicePixelRatio;
+                    if (targetTag && tagName === targetTag) score += 10;
+                    if (roleValue === 42 && tagName === 'a') score += 20;
+                    if (roleValue === 29 && /^h[1-6]$/.test(tagName)) score += 20;
+                    if (roleValue === 8 && (tagName === 'button' || e.getAttribute('role') === 'button')) score += 20;
+                    if (targetId && e.id === targetId) score += 50;
+                    if (targetClass && typeof e.className === 'string' && e.className.includes(targetClass)) score += 10;
 
-            if (
-                Math.abs(physicalWidth - targetWidth) <= 5
-                && Math.abs(physicalHeight - targetHeight) <= 5
-            ) {
-                score += 60;
-            }
-        }
-
-        if (targetTag && tagName === targetTag) {
-            score += 10;
-        }
-        if (roleValue === 42 && tagName === "a") {
-            score += 20;
-        }
-        if (roleValue === 29 && /^h[1-6]$/.test(tagName)) {
-            score += 20;
-        }
-        if (
-            roleValue === 8
-            && (tagName === "button" || element.getAttribute("role") === "button")
-        ) {
-            score += 20;
-        }
-        if (targetId && element.id === targetId) {
-            score += 50;
-        }
-        if (
-            targetClass
-            && typeof element.className === "string"
-            && element.className.includes(targetClass)
-        ) {
-            score += 10;
-        }
-
-        if (score > bestScore && score > 0) {
-            bestScore = score;
-            bestElement = element;
-        }
-    }
-
-    return {element: bestElement, score: bestScore};
-}
-
-function locateElement(target) {
-    if (!target) {
-        return document.activeElement;
-    }
-
-    const selector = target.nvda_selector || "";
-
-    if (selector) {
-        try {
-            const exactMatches = document.querySelectorAll(selector);
-            if (exactMatches.length === 1) {
-                return exactMatches[0];
-            }
-            if (exactMatches.length > 1) {
-                const exactResult = findBestElement(exactMatches, target);
-                if (exactResult.element) {
-                    return exactResult.element;
+                    if (score > currentBestScore && score > 0) {
+                        currentBestScore = score;
+                        bestE = e;
+                    }
+                }
+                
+                if (currentBestScore > bestScore) {
+                    bestScore = currentBestScore;
+                    el = bestE;
                 }
             }
-        } catch (_error) {
-            // Continue with the scored fallback when a selector is not accepted.
+
+            if (nvdaSelector) {
+                try {
+                    let elements = document.querySelectorAll(nvdaSelector);
+                    if (elements.length === 1) {
+                        el = elements[0];
+                        bestScore = 10000; 
+                    } else if (elements.length > 1) {
+                        findBestIn(elements);
+                    }
+                } catch (e) {
+                    // Seçici geçersizse hatayı yut
+                }
+            }
+            
+            if (bestScore <= 0) {
+                let elements = document.querySelectorAll(targetTag || '*');
+                findBestIn(elements);
+            }
+            
+        } else {
+            el = document.activeElement;
+        }
+
+        let elementData = {};
+        if (el && el !== document.body && el !== document.documentElement) {
+            
+            // CSS Özellikleri (Computed Style)
+            let style = window.getComputedStyle(el);
+            let cssProps = {
+                display: style.display,
+                visibility: style.visibility,
+                cursor: style.cursor,
+                pointerEvents: style.pointerEvents,
+                zIndex: style.zIndex,
+                position: style.position,
+                color: style.color,
+                backgroundColor: style.backgroundColor
+            };
+
+            // YOL A (Inline Events)
+            let inlineEvents = {};
+            for (let prop in el) {
+                if (prop && prop.startsWith('on') && el[prop] !== null) {
+                    inlineEvents[prop] = typeof el[prop];
+                }
+            }
+
+            elementData = {
+                "tag": el.tagName ? el.tagName.toLowerCase() : "",
+                "id": el.id || "",
+                "className": el.className || "",
+                "type": el.getAttribute("type") || "",
+                "role": el.getAttribute("role") || "",
+                "aria-label": el.getAttribute("aria-label") || "",
+                "innerText": el.innerText ? el.innerText.substring(0, 500).trim() : "",
+                "value": el.value || "",
+                "href": el.href || "",
+                "outerHTML": el.outerHTML ? el.outerHTML.substring(0, 1000) : "",
+                "css": cssProps,
+                "inlineEvents": inlineEvents
+            };
+
+            // YOL B (Framework Hack - Injection)
+            let scriptId = "event-hack-script-" + Math.random().toString(36).substr(2, 9);
+            el.dataset.nvdaTargetId = scriptId; 
+            
+            const messageListener = function(event) {
+                if (event.data && event.data.type === "DOM_EVENTS_EXTRACTED" && event.data.id === scriptId) {
+                    window.removeEventListener("message", messageListener);
+                    delete el.dataset.nvdaTargetId;
+                    
+                    elementData["frameworkEvents"] = event.data.frameworkProps;
+                    sendResponse(elementData);
+                }
+            };
+            
+            window.addEventListener("message", messageListener);
+
+            window.dispatchEvent(new CustomEvent("NVDA_EXTRACT_FRAMEWORK_EVENTS", { detail: scriptId }));
+            
+        } else {
+            elementData = {
+                "HATA": "Chrome DOM içinde bu ağaca (XPath) ait hiçbir element bulunamadı."
+            };
+            sendResponse(elementData);
         }
     }
-
-    let candidates;
-    try {
-        candidates = document.querySelectorAll(target.tag || "*");
-    } catch (_error) {
-        candidates = document.querySelectorAll("*");
-    }
-
-    return findBestElement(candidates, target).element;
-}
-
-function isSensitiveControl(element) {
-    if (!(element instanceof HTMLInputElement)) {
-        return false;
-    }
-
-    const type = (element.type || "").toLowerCase();
-    const autocomplete = (element.autocomplete || "").toLowerCase();
-    return (
-        type === "password"
-        || autocomplete === "current-password"
-        || autocomplete === "new-password"
-    );
-}
-
-function getSafeOuterHtml(element) {
-    const clone = element.cloneNode(true);
-    const controls = [];
-
-    if (clone instanceof HTMLInputElement) {
-        controls.push(clone);
-    }
-    controls.push(
-        ...clone.querySelectorAll(
-            'input[type="password"], input[autocomplete="current-password"], '
-            + 'input[autocomplete="new-password"]'
-        )
-    );
-
-    for (const control of controls) {
-        control.removeAttribute("value");
-    }
-
-    return (clone.outerHTML || "").substring(0, 1000);
-}
-
-function collectElementData(element) {
-    const style = window.getComputedStyle(element);
-    const inlineEvents = {};
-
-    for (const property in element) {
-        if (property.startsWith("on") && element[property] !== null) {
-            inlineEvents[property] = typeof element[property];
-        }
-    }
-
-    return {
-        tag: element.tagName ? element.tagName.toLowerCase() : "",
-        id: element.id || "",
-        className: element.className || "",
-        type: element.getAttribute("type") || "",
-        role: element.getAttribute("role") || "",
-        "aria-label": element.getAttribute("aria-label") || "",
-        innerText: element.innerText ? element.innerText.substring(0, 500).trim() : "",
-        value: isSensitiveControl(element) ? "[redacted]" : (element.value || ""),
-        href: element.href || "",
-        outerHTML: getSafeOuterHtml(element),
-        css: {
-            display: style.display,
-            visibility: style.visibility,
-            cursor: style.cursor,
-            pointerEvents: style.pointerEvents,
-            zIndex: style.zIndex,
-            position: style.position,
-            color: style.color,
-            backgroundColor: style.backgroundColor
-        },
-        inlineEvents
-    };
-}
-
-chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
-    if (request.action !== "get_active_element") {
-        return false;
-    }
-
-    const element = locateElement(request.target);
-
-    if (!element || element === document.body || element === document.documentElement) {
-        sendResponse({error: "No matching element was found in the page DOM."});
-        return false;
-    }
-
-    const elementData = collectElementData(element);
-    const scriptId = `nvda-target-${Math.random().toString(36).slice(2, 11)}`;
-    let responded = false;
-    let timeoutId;
-
-    const finish = payload => {
-        if (responded) {
-            return;
-        }
-        responded = true;
-        clearTimeout(timeoutId);
-        window.removeEventListener("message", messageListener);
-        delete element.dataset.nvdaTargetId;
-        sendResponse(payload);
-    };
-
-    const messageListener = event => {
-        if (
-            event.source === window
-            && event.data
-            && event.data.type === "DOM_EVENTS_EXTRACTED"
-            && event.data.id === scriptId
-        ) {
-            elementData.frameworkEvents = event.data.frameworkProps;
-            finish(elementData);
-        }
-    };
-
-    element.dataset.nvdaTargetId = scriptId;
-    window.addEventListener("message", messageListener);
-    timeoutId = setTimeout(() => finish(elementData), 750);
-    window.dispatchEvent(
-        new CustomEvent("NVDA_EXTRACT_FRAMEWORK_EVENTS", {detail: scriptId})
-    );
-
     return true;
 });

@@ -1,80 +1,70 @@
-let retryDelayMs = 3000;
-const MAX_RETRY_DELAY_MS = 60000;
-const BRIDGE_URL = "http://127.0.0.1:63333";
-
-function postUpdate(payload) {
-    return fetch(`${BRIDGE_URL}/update`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload || {})
-    }).catch(error => {
-        console.error("Could not send the DOM update to NVDA.", error);
-    });
-}
+let retryDelay = 3000; 
+const MAX_RETRY_DELAY = 60000;
 
 function poll() {
-    fetch(`${BRIDGE_URL}/poll`, {
-        method: "GET",
-        cache: "no-cache"
+    fetch('http://127.0.0.1:63333/poll', {
+        method: 'GET',
+        cache: 'no-cache'
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error(`Bridge server returned HTTP ${response.status}`);
+            throw new Error('Server responded with an error');
         }
         return response.json();
     })
     .then(data => {
-        retryDelayMs = 3000;
+        
+        retryDelay = 3000;
 
         if (data.action === "get_dom") {
-            chrome.tabs.query({active: true, currentWindow: true}, tabs => {
-                if (!tabs || tabs.length === 0) {
-                    postUpdate({error: "No active Chrome tab was found."});
-                    return;
-                }
-
-                chrome.tabs.sendMessage(
-                    tabs[0].id,
-                    {
-                        action: "get_active_element",
-                        target: data.target
-                    },
-                    response => {
+            
+            chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+                if (tabs && tabs.length > 0) {
+                    let activeTab = tabs[0];
+                    chrome.tabs.sendMessage(activeTab.id, {
+                        action: "get_active_element", 
+                        target: data.target 
+                    }, function(response) {
                         let payload = response;
-
                         if (chrome.runtime.lastError) {
-                            payload = {
-                                error: (
-                                    "The extension could not read this page. Reload the page and "
-                                    + "try again; browser-internal pages cannot be inspected."
-                                )
-                            };
+                            console.error(chrome.runtime.lastError);
+                            payload = {"hata": "Eklenti bu sayfada okuma yapamıyor (sayfa yenilenmemiş veya chrome:// sayfası olabilir)."};
                         }
-
-                        postUpdate(payload);
-                    }
-                );
+                        
+                        
+                        fetch('http://127.0.0.1:63333/update', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(payload || {})
+                        }).catch(err => console.error("Update işlemi başarısız", err));
+                    });
+                }
             });
         }
-
+        
+        
         poll();
     })
     .catch(error => {
-        console.debug(
-            `NVDA bridge unavailable; retrying in ${retryDelayMs / 1000} seconds.`,
-            error
-        );
-        setTimeout(poll, retryDelayMs);
-        retryDelayMs = Math.min(retryDelayMs * 2, MAX_RETRY_DELAY_MS);
+        console.log(`NVDA sunucusu kapalı veya hata oluştu. ${retryDelay / 1000} saniye sonra tekrar denenecek...`);
+        setTimeout(poll, retryDelay);
+        
+        
+        if (retryDelay < MAX_RETRY_DELAY) {
+            retryDelay = Math.min(retryDelay * 2, MAX_RETRY_DELAY);
+        }
     });
 }
 
+
 poll();
 
-chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "ping") {
         sendResponse("pong");
+        return true;
     }
 });

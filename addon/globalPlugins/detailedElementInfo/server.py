@@ -2,6 +2,8 @@ import json
 import logging
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+import addonHandler
+addonHandler.initTranslation()
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -12,37 +14,14 @@ poll_event = threading.Event()
 target_info_cache = None
 
 class BridgeRequestHandler(BaseHTTPRequestHandler):
-    def _originIsAllowed(self):
-        origin = self.headers.get('Origin')
-        return not origin or origin.startswith('chrome-extension://')
-
-    def _sendCorsHeaders(self):
-        origin = self.headers.get('Origin')
-        if origin and origin.startswith('chrome-extension://'):
-            self.send_header('Access-Control-Allow-Origin', origin)
-            self.send_header('Vary', 'Origin')
-        if self.headers.get('Access-Control-Request-Private-Network') == 'true':
-            self.send_header('Access-Control-Allow-Private-Network', 'true')
-
-    def _rejectDisallowedOrigin(self):
-        if self._originIsAllowed():
-            return False
-        self.send_response(403)
-        self.end_headers()
-        return True
-
     def do_OPTIONS(self):
-        if self._rejectDisallowedOrigin():
-            return
         self.send_response(200)
+        self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
-        self._sendCorsHeaders()
         self.end_headers()
 
     def do_GET(self):
-        if self._rejectDisallowedOrigin():
-            return
         if self.path == '/poll':
             event_triggered = poll_event.wait(timeout=10.0)
             
@@ -56,7 +35,7 @@ class BridgeRequestHandler(BaseHTTPRequestHandler):
             try:
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
-                self._sendCorsHeaders()
+                self.send_header('Access-Control-Allow-Origin', '*')
                 self.end_headers()
                 self.wfile.write(json.dumps(response_data).encode('utf-8'))
             except (ConnectionAbortedError, ConnectionResetError, BrokenPipeError):
@@ -66,8 +45,6 @@ class BridgeRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
 
     def do_POST(self):
-        if self._rejectDisallowedOrigin():
-            return
         if self.path == '/update':
             global latest_dom_data
             content_length = int(self.headers.get('Content-Length', 0))
@@ -77,10 +54,10 @@ class BridgeRequestHandler(BaseHTTPRequestHandler):
                     data = json.loads(body)
                     latest_dom_data = data
                 except json.JSONDecodeError:
-                    logger.error("Received invalid JSON data.")
+                    logger.error("Geçersiz JSON verisi alındı.")
             
             self.send_response(200)
-            self._sendCorsHeaders()
+            self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
         else:
             self.send_response(404)
@@ -92,7 +69,7 @@ class BridgeRequestHandler(BaseHTTPRequestHandler):
 def run_server():
     server_address = ('127.0.0.1', 63333)
     httpd = ThreadingHTTPServer(server_address, BridgeRequestHandler)
-    logger.info("HTTP long-polling server started at 127.0.0.1:63333.")
+    logger.info("HTTP Long-Polling sunucusu 127.0.0.1:63333 adresinde başlatıldı.")
     httpd.serve_forever()
 
 def start_server_in_background():
@@ -109,7 +86,7 @@ def request_dom_data_from_clients(target_info=None):
 
 def get_ai_analysis():
     if not latest_dom_data:
-        return _("No DOM data has been received from the Chrome extension yet.")
+        return _("Henüz Chrome eklentisinden herhangi bir DOM verisi alınmadı.")
     
     from . import ai_handler
     dom_text = json.dumps(latest_dom_data, indent=2, ensure_ascii=False)
