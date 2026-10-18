@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## Planning - 2026-10-18
+
+- Correct the expansion plan's data contract, diagnostic rules, contrast limits, privacy boundaries, and acceptance gates; no implementation changes.
+- 2026-10-18: Add tester context requirements and a separately deferred focus/live-announcement observation extension to the plan; no implementation changes.
+
 ## [1.1.0] - 2026-07-29
 
 ### Added
