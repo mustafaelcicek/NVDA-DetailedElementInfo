@@ -47,7 +47,14 @@ class ReportBuilder:
             f"<h2>{_('Current element')}</h2>"
         ]
 
-        html.extend(self._formatElement(obj, cfg, heading_level="h3"))
+        if isinstance(obj, dict) and "rawAttrs" in obj:
+            current_data = obj
+            live_obj = obj.get("object")
+        else:
+            current_data = self.analyzer.analyze(obj)
+            live_obj = obj
+
+        html.extend(self._formatElement(current_data, cfg, heading_level="h3"))
 
         if getBool(cfg, "advancedSupport"):
             try:
@@ -63,8 +70,8 @@ class ReportBuilder:
             except Exception:
                 pass
 
-        if getBool(cfg, "showAncestors"):
-            ancestors = self.analyzer.ancestors(obj)
+        if getBool(cfg, "showAncestors") and live_obj is not None:
+            ancestors = self.analyzer.ancestors(live_obj)
 
             if ancestors:
                 html.append(f"<h2>{_('Ancestor elements')}</h2>")
@@ -79,7 +86,10 @@ class ReportBuilder:
         return "".join(html)
 
     def _formatElement(self, obj, cfg, heading_level="h3"):
-        data = self.analyzer.analyze(obj)
+        if isinstance(obj, dict) and "rawAttrs" in obj:
+            data = obj
+        else:
+            data = self.analyzer.analyze(obj)
 
         rawAttrs = data["rawAttrs"]
         derivedAttrs = data["derivedAttrs"]

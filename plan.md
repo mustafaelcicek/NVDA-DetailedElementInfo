@@ -1,6 +1,6 @@
 # Comprehensive Element Information Expansion Implementation Plan
 
-> For agentic workers: implement one milestone at a time using the repository's approved workflow. Review each milestone before advancing; subagent-driven development may divide planning, implementation, and verification according to model capacity. This revision authorizes documentation changes only; implementation requires separate approval.
+> For agentic workers: implement one milestone at a time using the repository's approved workflow. Review each milestone before advancing; subagent-driven development may divide planning, implementation, and verification according to model capacity. The human subsequently authorized implementation through Antigravity and independent review. Prepare Phases 0-7 sequentially; live NVDA acceptance remains a separate human gate.
 
 **Goal:** Expand native accessibility information and optional Chrome DOM inspection, then present bounded diagnostic checks consistently in HTML, Markdown, and explicitly requested Gemini analysis.
 
@@ -10,7 +10,7 @@
 
 **Spec:** This document incorporates the 2026-10-18 review; repository constraints are in [AGENTS.md](AGENTS.md), [CLAUDE.md](CLAUDE.md), and [CONTRIBUTING.md](CONTRIBUTING.md).
 
-**Status:** Plan corrected; no implementation, build, or live NVDA acceptance performed.
+**Status:** Phases 0-1 code written and independently checked locally on 2026-10-19; remaining implementation authorized. Live NVDA acceptance is pending throughout. Phase checklists below retain acceptance requirements until evidenced.
 
 ## Global Constraints
 

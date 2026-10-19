@@ -1,6 +1,25 @@
 # Changelog
 
+- 2026-10-19: Repair native snapshot review regressions in safe link URL reuse, guarded language reads, partial relation evidence, and single-capture missing names; add focused regression cases.
+
 All notable changes to this project will be documented in this file.
+
+## Implementation - 2026-10-19
+
+- Resolve Python 3.7 runtime typing compatibility blocker in `snapshot.py` to support NVDA 2023.1 runtime floor: replace PEP 604 unions (`|`) and PEP 585 builtin collection generics with standard `typing.Union`, `Optional`, `Dict`, `List`, `Mapping`, and `Iterable` constructs.
+- Add boundary casts in `sanitize_value` to resolve dynamic collection typing diagnostics under strict Pyright checks without blanket ignores.
+- Add Regression 10 to `scripts/run_tests.py` verifying AST-level and runtime compatibility for Python 3.7 (21/21 passing scenarios).
+
+## Implementation - 2026-10-18
+
+- Implement Phase 0 snapshot contract with explicit provenance and availability states (`available`, `unavailable`, `unsupported`, `error`) and UUID capture IDs in `snapshot.py`.
+- Implement Phase 1 native NVDA and IA2 property expansion in `elementAnalyzer.py`: single-capture root property architecture, tri-state protection with fail-closed value omission, password value redaction from `rawAttrs`, guarded independent property reads, explicit mapped IA2 attributes with container separation, generator-tolerant IA2 relations bounded to 8 items with official RelationType names, and five verified native context groups (`visible_label`, `language`, `form`, `table`, `composite`).
+- Introduce minimal backward-compatibility seam in `reportBuilder.py` accepting both pre-analyzed snapshot dicts and live NVDAObjects.
+- Expand standalone scenario runner `scripts/run_tests.py` to 20 targeted scenarios covering all initial specifications and Codex review regression checks.
+
+## Delegation - 2026-10-18
+
+- Prepare Antigravity implementation and record baseline gates; headless command approval blocked the first dispatch before source edits.
 
 ## Planning - 2026-10-18
 
