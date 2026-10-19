@@ -244,7 +244,7 @@ console.log("Test 5: Disconnected element rejection in production content.js..."
     assert.strictEqual(ctx.observed.messages.filter(m => m.action === "bridge_ready").length, readyCount);
 }
 
-async function backgroundHarness({holdUpdate = false} = {}) {
+async function backgroundHarness({holdUpdate = false, focused = true, windowError = false, focusBeforeClaim = false} = {}) {
     let listener;
     let releasePoll;
     let polls = 0;
@@ -255,7 +255,7 @@ async function backgroundHarness({holdUpdate = false} = {}) {
     const chrome = {
         runtime: {lastError: null, onMessage: {addListener: fn => { listener = fn; }}},
         tabs: {
-            query: (_query, cb) => cb([{id: 3}]),
+            query: (_query, cb) => cb([{id: 3, windowId: 7}]),
             sendMessage: (id, message, options, cb) => {
                 sent.push({id, message, options});
                 if (cb) cb();
@@ -264,6 +264,8 @@ async function backgroundHarness({holdUpdate = false} = {}) {
             onReplaced: event("replaced"), onActivated: event("activated"),
         },
     };
+    chrome.windows = {onFocusChanged: event("focusChanged"),
+        get: (_id, _options, cb) => cb(windowError ? undefined : {focused})};
     const fetch = (url, options = {}) => {
         if (url.endsWith("/poll")) {
             polls++;
@@ -284,6 +286,7 @@ async function backgroundHarness({holdUpdate = false} = {}) {
     const request = {action: "get_dom", request_id: "probe",
                      expected_url: sender.url, target: {tag: "button", id: "probe"},
                      captured_at_ms: Date.now() + 1, deadline_ms: Date.now() + 1900};
+    if (focusBeforeClaim && events.focusChanged) events.focusChanged(8);
     releasePoll({ok: true, json: async () => request});
     const flush = async () => { for (let n = 0; n < 20; n++) await Promise.resolve(); };
     await flush();
@@ -291,6 +294,16 @@ async function backgroundHarness({holdUpdate = false} = {}) {
 }
 
 (async () => {
+    for (const options of [{focused:false}, {windowError:true}, {focusBeforeClaim:true}]) {
+        const rejected = await backgroundHarness(options);
+        assert.strictEqual(rejected.sent.length, 0, "Unfocused, unknown or changed window must not prepare");
+    }
+    const moved = await backgroundHarness();
+    assert.ok(moved.events.focusChanged, "Window focus invalidation must be registered");
+    moved.events.focusChanged(8);
+    moved.listener({action:"bridge_ready",request_id:"probe",documentNonce:"nonce-A",timeOrigin:1000}, moved.sender,()=>{});
+    await moved.flush();
+    assert.strictEqual(moved.posts.filter(p=>p.url.endsWith("/bind")).length,0);
     const beforeBind = await backgroundHarness();
     beforeBind.listener({action: "dom_result", request_id: "probe", documentNonce: "nonce-A",
                          connected_target: true, result: {tag: "button"}},
@@ -313,6 +326,13 @@ async function backgroundHarness({holdUpdate = false} = {}) {
     await h.flush();
     assert.strictEqual(h.posts.filter(p => p.body.result).length, 0,
                        "Different document cannot complete the pinned request");
+    const focusAfterBind = await backgroundHarness();
+    focusAfterBind.listener({action:"bridge_ready",request_id:"probe",documentNonce:"nonce-A",timeOrigin:1000},focusAfterBind.sender,()=>{});
+    await focusAfterBind.flush();
+    focusAfterBind.events.focusChanged(8);
+    focusAfterBind.listener({action:"dom_result",request_id:"probe",documentNonce:"nonce-A",timeOrigin:1000,connected_target:true,result:{tag:"button"}},focusAfterBind.sender,()=>{});
+    await focusAfterBind.flush();
+    assert.strictEqual(focusAfterBind.posts.filter(p=>p.body.result).length,0);
     const pending = await backgroundHarness({holdUpdate: true});
     pending.listener({action: "bridge_ready", request_id: "probe",
                       documentNonce: "nonce-A", timeOrigin: 1000}, pending.sender, () => {});
@@ -323,8 +343,8 @@ async function backgroundHarness({holdUpdate = false} = {}) {
     await pending.flush();
     const delivery = pending.posts.find(p => p.body.result);
     assert.ok(delivery);
-    pending.events.updated(3, {status: "loading"});
+    pending.events.focusChanged(8);
     assert.strictEqual(delivery.signal.aborted, true,
-                       "Navigation must abort a final delivery awaiting acknowledgment");
+                       "Window focus changes must abort a final delivery awaiting acknowledgment");
     console.log("Actual background handshake, changed-document and handoff-cancellation checks passed.");
 })().catch(error => { console.error(error); process.exitCode = 1; });

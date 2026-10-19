@@ -589,22 +589,13 @@ def request_dom_data_from_clients(
     return create_bridge_request(req_id, target_info, expected_url=expected_url)
 
 
-def get_ai_analysis() -> str:
-    dom_data = _manager.get_latest_dom_data()
-    if not dom_data:
-        try:
-            return _(  # type: ignore[name-defined]
-                "No DOM data has been received from the Chrome extension yet."
-            )
-        except Exception:
-            return "No DOM data has been received from the Chrome extension yet."
-
+def get_ai_analysis(snapshot: Optional[Dict[str, Any]] = None) -> str:
+    # Compatibility entry point: an explicit frozen snapshot is mandatory.
+    if snapshot is None:
+        return "No report snapshot is available for AI analysis."
     from . import ai_handler
 
-    dom_text = json.dumps(dom_data, indent=2, ensure_ascii=False)
-    ai_mod = cast(Any, ai_handler)
-    res: Any = ai_mod.analyze_dom_with_gemini(dom_text)
-    return str(res)
+    return ai_handler.analyze_dom_with_gemini(snapshot)
 
 
 if __name__ == "__main__":

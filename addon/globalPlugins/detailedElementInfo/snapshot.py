@@ -28,9 +28,7 @@ PROTECTION_PROTECTED: str = "protected"
 PROTECTION_UNPROTECTED: str = "unprotected"
 PROTECTION_INDETERMINATE: str = "indeterminate"
 
-ObservationValue = Optional[
-    Union[bool, int, float, str, List[Any], Dict[str, Any]]
-]
+ObservationValue = Optional[Union[bool, int, float, str, List[Any], Dict[str, Any]]]
 
 
 def create_observation(

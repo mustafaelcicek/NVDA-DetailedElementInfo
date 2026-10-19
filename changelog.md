@@ -1,5 +1,11 @@
 # Changelog
 
+- 2026-10-19: Restrict DOM enrichment to positively identified Chrome targets in a focused window; invalidate all document witnesses and pending delivery on window-focus changes.
+
+- 2026-10-19: Analyze only the explicitly selected report snapshot through a bounded Gemini allowlist, redact duplicated sensitive text, omit editable text without value evidence, and keep errors free of credentials/response bodies; preserve locale and local offline features.
+
+- 2026-10-19: Render frozen evidence in matching HTML/Markdown sections, preserve four section settings and old choices, and bind unassigned Markdown copying to each report snapshot with verified clipboard success. Human NVDA acceptance remains pending.
+
 - 2026-10-19: Add deterministic, sourced per-element name/image/label/click checks and conservative production-JavaScript text contrast; preserve unknown applicability and meaningful mathematical symbols. Human NVDA acceptance remains pending.
 
 - 2026-10-19: Repair Bridge document binding, protected-data omission, shared reference budgets and contextual evidence directly after independent review; retain 49 local scenarios and 18 optional production-JavaScript Chrome checks. Human NVDA acceptance remains pending.

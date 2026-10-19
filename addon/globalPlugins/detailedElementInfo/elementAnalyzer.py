@@ -68,6 +68,17 @@ class ElementAnalyzer:
         headingLevel = getHeadingLevel(tag, rawAttrs)
         msaaRole = snapshot["native"]["msaa_role"]["value"]
 
+        for key, value in {
+            "dom_path": domPath,
+            "name_source": nameSource,
+            "name_confidence": nameConfidence,
+            "semantic_source": semanticSource,
+            "semantic_mismatch": nativeSemanticMismatch,
+            "heading_level": headingLevel,
+        }.items():
+            snapshot["native"][key] = create_observation(
+                value, SOURCE_DERIVED, AVAIL_AVAILABLE if value is not None else AVAIL_UNAVAILABLE
+            )
         return {
             "object": obj,
             "rawAttrs": rawAttrs,
@@ -105,6 +116,10 @@ class ElementAnalyzer:
         sc_val, sc_avail = self._safe_read(obj, "keyboardShortcut")
         loc_val, loc_avail = self._safe_read(obj, "location")
         wh_val, wh_avail = self._safe_read(obj, "windowHandle")
+        app_module, app_avail = self._safe_read(obj, "appModule")
+        app_name, app_name_avail = (
+            self._safe_read(app_module, "appName") if app_module is not None else (None, app_avail)
+        )
         pos_val, pos_avail = self._safe_read(obj, "positionInfo")
 
         states_val = None
@@ -201,6 +216,7 @@ class ElementAnalyzer:
             "role_text": create_observation(role_str_val, SOURCE_NVDA, role_str_avail),
             "description": create_observation(desc_val, SOURCE_NVDA, desc_avail),
             "keyboard_shortcut": create_observation(sc_val, SOURCE_NVDA, sc_avail),
+            "application_name": create_observation(app_name, SOURCE_NVDA, app_name_avail),
             "value": val_obs,
             "position_info": create_observation(pos_val, SOURCE_NVDA, pos_avail),
             "states": create_observation(states_list, SOURCE_NVDA, states_avail),

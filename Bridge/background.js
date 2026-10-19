@@ -111,19 +111,26 @@ async function poll() {
                     if (request !== activePendingRequest) return;
                     if (!tabs || tabs.length !== 1) return fail(request, "no_active_tab");
                     request.tab_id = tabs[0].id;
-                    const witness = witnesses.get(request.tab_id);
-                    if (!witness || witness.witnessed_at_ms > request.captured_at_ms
-                        || witness.document_time_origin_ms > request.captured_at_ms
-                        || !urlsMatch(witness.document_url, request.expected_url)) {
-                        return fail(request, "missing_document_witness");
-                    }
-                    request.witness = {...witness};
-                    chrome.tabs.sendMessage(request.tab_id, {
-                        action: "prepare_element", request_id: request.request_id,
-                        expected_url: request.expected_url, deadline_ms: request.deadline_ms,
-                        documentNonce: witness.document_instance_nonce,
-                    }, {frameId: 0, documentId: witness.actual_document_id}, () => {
-                        if (chrome.runtime.lastError) fail(request, "prepare_unavailable");
+                    if (!Number.isInteger(tabs[0].windowId)) return fail(request, "unknown_window");
+                    chrome.windows.get(tabs[0].windowId, {populate: false}, window => {
+                        if (request !== activePendingRequest) return;
+                        if (chrome.runtime.lastError || !window || window.focused !== true) {
+                            return fail(request, "unfocused_window");
+                        }
+                        const witness = witnesses.get(request.tab_id);
+                        if (!witness || witness.witnessed_at_ms > request.captured_at_ms
+                            || witness.document_time_origin_ms > request.captured_at_ms
+                            || !urlsMatch(witness.document_url, request.expected_url)) {
+                            return fail(request, "missing_document_witness");
+                        }
+                        request.witness = {...witness};
+                        chrome.tabs.sendMessage(request.tab_id, {
+                            action: "prepare_element", request_id: request.request_id,
+                            expected_url: request.expected_url, deadline_ms: request.deadline_ms,
+                            documentNonce: witness.document_instance_nonce,
+                        }, {frameId: 0, documentId: witness.actual_document_id}, () => {
+                            if (chrome.runtime.lastError) fail(request, "prepare_unavailable");
+                        });
                     });
                 });
             }
@@ -209,5 +216,9 @@ chrome.tabs.onRemoved.addListener(tabId => clearTab(tabId));
 chrome.tabs.onReplaced.addListener((added, removed) => { clearTab(added); clearTab(removed); });
 chrome.tabs.onActivated.addListener(() => {
     for (const tabId of witnesses.keys()) clearTab(tabId);
+});
+chrome.windows.onFocusChanged.addListener(() => {
+    witnesses.clear();
+    if (activePendingRequest) fail(activePendingRequest, "window_focus_changed");
 });
 poll();

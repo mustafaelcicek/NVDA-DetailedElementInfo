@@ -10,7 +10,7 @@
 
 **Spec:** This document incorporates the 2026-10-18 review; repository constraints are in [AGENTS.md](AGENTS.md), [CLAUDE.md](CLAUDE.md), and [CONTRIBUTING.md](CONTRIBUTING.md).
 
-**Status:** Direct reviewer repair of Phases 1-2 is locally verified (49 scenarios, 18 actual Chrome cases and independent review); human NVDA acceptance remains pending. Phase 3 is locally verified (54 scenarios and 37 actual Chrome cases) after independent review. Phase 4 is in progress; Phases 5-7 and human NVDA acceptance remain pending.
+**Status:** Approved Phases 0-6 code and documentation are written; Phase 7 local checks pass (64 default scenarios, 37 actual Chrome cases, Node, touched-file lint and SCons build). Independent review closed the evidenced implementation findings. Full configured Pyright remains unresolved at 1872 errors. Human NVDA acceptance is not_started and blocks release/ready-for-PR status; see project_state.md.
 
 ## Global Constraints
 
@@ -172,8 +172,8 @@
 
 **Files:** scripts/run_tests.py; scripts/element_info_fixture.html; task.md; project_state.md; documentation only where verified behavior requires correction.
 
-- [ ] Run the dependency-free scenario runner from the repository root: python scripts/run_tests.py. It must return a nonzero exit code for a failing scenario and report named cases and counts. Use only minimal NVDA stubs for pure logic; do not confuse stub results with screen-reader acceptance.
-- [ ] Exercise the actual Bridge JavaScript against the retained HTML fixture in Chrome, including the contrast numeric and threshold cases. Record this separately from Python checks.
+- [x] Run the dependency-free scenario runner from the repository root: python scripts/run_tests.py. It must return a nonzero exit code for a failing scenario and report named cases and counts. Use only minimal NVDA stubs for pure logic; do not confuse stub results with screen-reader acceptance.
+- [x] Exercise the actual Bridge JavaScript against the retained HTML fixture in Chrome, including the contrast numeric and threshold cases. Record this separately from Python checks.
 - [ ] Run the repository's existing configured lint/type checks; identify non-blocking checks explicitly. Run git diff --check and build with uv run scons using the documented tooling and gettext prerequisites. Do not add a test framework or replace project tooling.
 - [ ] Have a human install the built add-on, or enable the Developer Scratchpad and copy the plugin to the configured NVDA profile, then restart/reload NVDA. Existing runtime-generated locale/build assets must remain build outputs.
 - [ ] Test NVDA 2023.1 and 2026.1 separately, with at least one supported intervening release; record exact NVDA, Windows, browser, architecture, and Bridge versions. Untested combinations remain unverified, regardless of manifest values.

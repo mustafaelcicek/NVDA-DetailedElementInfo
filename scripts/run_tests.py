@@ -247,6 +247,8 @@ class MockNVDAObject:
             )
         self.location = kwargs.get("location", (10, 20, 100, 30))
         self.parent = kwargs.get("parent", None)
+        if "appModule" not in self.__class__.__dict__:
+            self.appModule = kwargs.get("appModule", types.SimpleNamespace(appName="chrome"))
         if "IA2Attributes" not in self.__class__.__dict__:
             self.IA2Attributes = kwargs.get(
                 "IA2Attributes", {"tag": "input", "id": "test-input", "type": "text"}
@@ -585,9 +587,9 @@ def test_backward_compatibility():
 
     # ReportBuilder._formatElement and buildReport work with data
     builder = ReportBuilder(analyzer)
-    html_report = builder.buildReport(obj)
+    html_report = builder.buildReport(data["snapshot"])
     assert "<h1>Detailed Element Info</h1>" in html_report
-    assert "<h2>Current element</h2>" in html_report
+    assert "<h2>Identity and roles</h2>" in html_report
 
 
 @scenario("Phase 1: Relation targets budget cap at 8 items")
@@ -694,7 +696,7 @@ def test_protected_raw_attributes_sanitized():
     )
     snap = analyzer.build_snapshot(obj)
     data = analyzer.analyze(obj)
-    html = builder.buildReport(obj)
+    html = builder.buildReport(data["snapshot"])
 
     assert sentinel not in json.dumps(snap), "Sentinel password leaked into serialized snapshot!"
     assert sentinel not in html, "Sentinel password leaked into HTML report!"
@@ -1930,6 +1932,512 @@ def test_audit_contrast():
     assert finding(s, "text_contrast")["status"] == "unknown"
 
 
+@scenario("Phase 4: frozen HTML/Markdown parity, escaping and section choices")
+def test_report_serializers():
+    import copy
+    import html
+    from addon.globalPlugins.detailedElementInfo.config import DEFAULTS, FIELD_OPTIONS
+    from addon.globalPlugins.detailedElementInfo.reportBuilder import ReportBuilder
+    from addon.globalPlugins.detailedElementInfo.snapshot import create_observation as obs
+
+    s = audit_sample(name="<script>[x]</script>")
+    s["aria"]["tag"] = obs("button", "ia2_attribute", "available")
+    s["native"]["description"] = obs("", "nvda", "available")
+    s["context"]["language"] = {"effective": obs("de", "nvda", "available")}
+    s["context"]["form"] = {"readonly": obs(False, "ia2_attribute", "available")}
+    s["context"]["table"] = {"row_index": obs(0, "nvda", "available", truncated=True)}
+    s["context"]["composite"] = {"selected": obs(False, "nvda", "available")}
+    s["dom"]["properties"]["tab_index"] = 0
+    s["layout"]["bounds"] = {"x": 0, "y": 0, "width": 20, "height": 10}
+    s["layout"]["contrast"] = {
+        "source": "dom",
+        "availability": "available",
+        "ratio": 4.499,
+        "font_size_px": 16,
+        "font_weight": 400,
+    }
+    s["context"]["visible_label"] = obs(
+        "Search",
+        "dom",
+        "available",
+        source_element={"id": "source-label"},
+        applicability_evidence="visible_associated_text",
+    )
+    s["availability"]["report_fields"] = dict(DEFAULTS)
+    builder = ReportBuilder()
+    before = copy.deepcopy(s)
+    h, m = builder.buildReport(s), builder.buildMarkdownReport(s)
+    assert s == before
+    assert "<h1>Detailed Element Info</h1>" in h
+    for value in ("de", "false", "0", "nvda", "ia2_attribute", "truncated", "4.499", "source-label"):
+        import re
+
+        assert value in html.unescape(h) and value in re.sub(r"\\(.)", r"\1", html.unescape(m)), value
+    assert "<script>" not in h and "<script>" not in m
+    assert "&lt;script&gt;" in h and "&lt;script&gt;" in m
+    assert "\\[x\\]" in m
+    for setting, heading in [
+        ("showAriaDetails", "Accessibility and ARIA"),
+        ("showLayoutAndContrast", "Layout and appearance"),
+        ("showInteractivity", "Interaction and DOM"),
+        ("showAccessibilityAudit", "Diagnostic checks"),
+    ]:
+        s["audit"] = [
+            {
+                "rule_id": "example",
+                "status": "unknown",
+                "message_key": "unavailable",
+                "source": "derived",
+                "evidence": {},
+                "wcag_refs": ["1.4.3"],
+            }
+        ]
+        s["availability"]["report_fields"][setting] = False
+        assert "<h2>" + heading + "</h2>" not in builder.buildReport(s)
+        assert "## " + heading not in builder.buildMarkdownReport(s)
+        s["availability"]["report_fields"][setting] = True
+    s["availability"]["report_fields"] = {key: False for key, _ in FIELD_OPTIONS}
+    assert "<h2>" not in builder.buildReport(s)
+    assert "No fields selected" in builder.buildMarkdownReport(s)
+
+
+@scenario("Phase 4: new settings preserve false/token and participate in bulk selection")
+def test_section_settings():
+    from addon.globalPlugins.detailedElementInfo.config import getConfig, ensureConfigSpec, FIELD_OPTIONS
+    from addon.globalPlugins.detailedElementInfo.settingsPanel import DetailedElementInfoSettingsPanel
+    from addon.globalPlugins.detailedElementInfo import server
+
+    class Cell:
+        def __init__(self, value=None):
+            self.value = value
+
+        def SetValue(self, value):
+            self.value = value
+
+        def GetValue(self):
+            return self.value
+
+        def Enable(self, value):
+            pass
+
+    cfg = getConfig()
+    previous = dict(cfg)
+    lifecycle = []
+    previous_start, previous_stop = server.start_server_in_background, server.stop_server
+    server.start_server_in_background = lambda: lifecycle.append("start")
+    server.stop_server = lambda: lifecycle.append("stop")
+    new_keys = {"showAriaDetails", "showLayoutAndContrast", "showInteractivity", "showAccessibilityAudit"}
+    try:
+        assert new_keys <= {key for key, _ in FIELD_OPTIONS}
+        for key in new_keys:
+            cfg.pop(key, None)
+        cfg["showAriaDetails"] = False
+        cfg["aiToken"] = " preserved-token "
+        ensureConfigSpec()
+        panel = DetailedElementInfoSettingsPanel.__new__(DetailedElementInfoSettingsPanel)
+        panel._fieldCheckBoxes = {key: Cell() for key, _ in FIELD_OPTIONS}
+        panel.advancedSupportCheckBox, panel.aiTokenTextCtrl = Cell(), Cell()
+        panel._load()
+        assert panel._fieldCheckBoxes["showAriaDetails"].value is False
+        assert panel._fieldCheckBoxes["showLayoutAndContrast"].value is True
+        assert panel.aiTokenTextCtrl.value == " preserved-token "
+        panel._onClearAll(None)
+        assert all(not c.GetValue() for c in panel._fieldCheckBoxes.values())
+        panel._onSelectAll(None)
+        assert all(c.GetValue() for c in panel._fieldCheckBoxes.values())
+        panel.onSave()
+        assert cfg["aiToken"] == " preserved-token "
+        panel.advancedSupportCheckBox.SetValue(True)
+        panel.onSave()
+        panel.advancedSupportCheckBox.SetValue(False)
+        panel.onSave()
+        assert lifecycle[-2:] == ["start", "stop"]
+    finally:
+        server.start_server_in_background, server.stop_server = previous_start, previous_stop
+        cfg.clear()
+        cfg.update(previous)
+
+
+@scenario("Phase 4: actual report identity/copy stays with A after B; clipboard failure is truthful")
+def test_report_identity_copy():
+    import os
+    import api
+    import ui
+    from addon.globalPlugins.detailedElementInfo import GlobalPlugin
+    from addon.globalPlugins.detailedElementInfo.config import getConfig
+
+    config = getConfig()
+    previous = config["advancedSupport"]
+    config["advancedSupport"] = False
+    shown, spoken, copied = [], [], []
+    focus = [MockNVDAObject(name="Frozen A", IA2Attributes={"tag": "button"})]
+    foreground = [types.SimpleNamespace(name="page", processID=os.getpid() + 1, parent=None)]
+    success = [True]
+
+    def clipboard(text, notify=False):
+        copied.append(text)
+        return success[0]
+
+    patches = [
+        (api, "getFocusObject", lambda: focus[0]),
+        (api, "getForegroundObject", lambda: foreground[0]),
+        (api, "copyToClip", clipboard),
+        (ui, "browseableMessage", lambda text, **kw: shown.append((text, kw["title"]))),
+        (ui, "message", spoken.append),
+    ]
+    originals = [(m, k, getattr(m, k, None)) for m, k, _ in patches]
+    plugin = GlobalPlugin()
+    try:
+        for module, key, replacement in patches:
+            setattr(module, key, replacement)
+        plugin.script_showElementInfo(None)
+        title_a = shown[-1][1]
+        focus[0].name = "Changed A"
+        focus[0] = MockNVDAObject(name="Frozen B", IA2Attributes={"tag": "button"})
+        plugin.script_showElementInfo(None)
+        assert shown[-1][1] != title_a
+        foreground[0] = types.SimpleNamespace(name=title_a, processID=os.getpid(), parent=None)
+        plugin.script_copyElementInfoMarkdown(None)
+        assert "Frozen A" in copied[-1] and "Frozen B" not in copied[-1] and "Changed A" not in copied[-1]
+        assert spoken[-1] == "Element information copied as Markdown."
+        success[0] = False
+        plugin.script_copyElementInfoMarkdown(None)
+        assert spoken[-1] == "Unable to copy element information."
+        foreground[0] = types.SimpleNamespace(name=title_a, processID=os.getpid() + 1, parent=None)
+        plugin.script_copyElementInfoMarkdown(None)
+        assert "Frozen B" in copied[-1] and "Frozen A" not in copied[-1]
+        foreground[0] = types.SimpleNamespace(name="page", processID=os.getpid() + 1, parent=None)
+        success[0] = True
+        plugin.script_copyElementInfoMarkdown(None)
+        assert "Frozen B" in copied[-1]
+        for _ in range(21):
+            plugin.script_showElementInfo(None)
+        foreground[0] = types.SimpleNamespace(name=title_a, processID=os.getpid(), parent=None)
+        count = len(copied)
+        plugin.script_copyElementInfoMarkdown(None)
+        assert len(copied) == count and "unavailable" in spoken[-1].lower()
+    finally:
+        plugin.terminate()
+        config["advancedSupport"] = previous
+        for module, key, original in originals:
+            if original is None:
+                delattr(module, key)
+            else:
+                setattr(module, key, original)
+
+
+@scenario("Phase 4: serializers never read live targets, settings or the network")
+def test_pure_report_boundaries():
+    import urllib.request
+    from addon.globalPlugins.detailedElementInfo import config
+    from addon.globalPlugins.detailedElementInfo.reportBuilder import ReportBuilder
+
+    calls = []
+
+    def forbidden(*args, **kwargs):
+        calls.append(True)
+        raise AssertionError("Live external boundary reached")
+
+    class LiveTarget:
+        analyze = ancestors = forbidden
+
+    previous_config, previous_network = config.getConfig, urllib.request.urlopen
+    try:
+        config.getConfig = urllib.request.urlopen = forbidden
+        builder = ReportBuilder(LiveTarget())
+        s = audit_sample()
+        assert "Search" in builder.buildReport(s)
+        assert "Search" in builder.buildMarkdownReport(s)
+        try:
+            builder.buildReport(LiveTarget())
+        except TypeError:
+            pass
+        else:
+            raise AssertionError("Renderer accepted a live object")
+        assert calls == []
+    finally:
+        config.getConfig, urllib.request.urlopen = previous_config, previous_network
+
+
+def ai_sample():
+    from addon.globalPlugins.detailedElementInfo.snapshot import create_observation as obs
+
+    s = audit_sample(name="Public SYNTHETIC_PRIVATE_VALUE")
+    s["native"]["value"] = obs("SYNTHETIC_PRIVATE_VALUE", "nvda", "available", protection="unprotected")
+    s["native"]["description"] = obs("Description SYNTHETIC_API_KEY", "nvda", "available")
+    s["aria"]["tag"] = obs("button", "ia2_attribute", "available")
+    s["aria"]["relations"] = {
+        "labelledby": obs(
+            [{"name": "Public reference", "role": "16"}, {"name": "SYNTHETIC_PRIVATE_VALUE", "role": "16"}],
+            "ia2_relation",
+            "available",
+        )
+    }
+    return s
+
+
+@scenario("Phase 5: allowlisted AI evidence redacts duplicates and excludes context/raw data")
+def test_ai_allowlist():
+    import copy
+    from addon.globalPlugins.detailedElementInfo.ai_handler import build_ai_payload
+
+    s = ai_sample()
+    s["target"]["document_identity"] = {"url": "https://PRIVATE_URL.test"}
+    s["target"]["target_identity"] = {"window_handle": "PRIVATE_HANDLE"}
+    s["dom"]["attributes"] = {"selector": "PRIVATE_SELECTOR", "data-token": "PRIVATE_ATTRIBUTE"}
+    s["dom"]["properties"] = {"safe_outer_html": "<textarea>PRIVATE_MARKUP</textarea>"}
+    s["context"] = {
+        name: {"value": "PRIVATE_CONTEXT"}
+        for name in ("visible_label", "language", "form", "table", "composite")
+    }
+    s["audit"] = [
+        {
+            "rule_id": "text_contrast",
+            "status": "unknown",
+            "wcag_refs": ["1.4.3"],
+            "evidence": {"ratio": 4.499, "raw": "PRIVATE_EVIDENCE"},
+        }
+    ]
+    before = copy.deepcopy(s)
+    payload = build_ai_payload(s, sensitive_values=["SYNTHETIC_API_KEY"])
+    encoded = json.dumps(payload, ensure_ascii=False)
+    for private in (
+        "SYNTHETIC_PRIVATE_VALUE",
+        "SYNTHETIC_API_KEY",
+        "PRIVATE_URL",
+        "PRIVATE_HANDLE",
+        "PRIVATE_SELECTOR",
+        "PRIVATE_ATTRIBUTE",
+        "PRIVATE_MARKUP",
+        "PRIVATE_CONTEXT",
+        "PRIVATE_EVIDENCE",
+    ):
+        assert private not in encoded, private
+    assert "Public" in encoded and "Public reference" in encoded
+    assert payload["findings"][0]["status"] == "unknown"
+    assert s == before
+
+
+@scenario("Phase 5: valid deterministic JSON cap, reference limits and fail-closed protection")
+def test_ai_caps_protection():
+    from addon.globalPlugins.detailedElementInfo.ai_handler import build_ai_payload
+
+    s = ai_sample()
+    s["native"]["name"]["value"] = "ع" * 10000
+    s["native"]["description"]["value"] = "غ" * 10000
+    s["aria"]["relations"]["labelledby"]["value"] = [{"name": "م" * 600, "role": "16"}] * 30
+    for limit in (1600, 16000):
+        first = build_ai_payload(s, max_chars=limit)
+        second = build_ai_payload(s, max_chars=limit)
+        encoded = json.dumps(first, ensure_ascii=False, separators=(",", ":"))
+        assert len(encoded) <= limit and json.loads(encoded) == first and first == second
+        assert len(first.get("relationships", [])) <= 8
+    for state in ("protected", "indeterminate"):
+        s["native"]["value"]["protection"] = state
+        s["native"]["name"]["value"] = "PRIVATE_PROTECTED"
+        result = json.dumps(build_ai_payload(s), ensure_ascii=False)
+        assert "PRIVATE_PROTECTED" not in result and "م" not in result
+
+
+@scenario("Phase 5: mocked HTTP uses header auth/locale, multipart output and private-safe errors")
+def test_ai_http_boundary():
+    import io
+    import logging
+    import urllib.request
+    import urllib.error
+    from addon.globalPlugins.detailedElementInfo import ai_handler
+    from addon.globalPlugins.detailedElementInfo.config import getConfig
+
+    class Response:
+        def __init__(self, body):
+            self.body = body
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            pass
+
+        def read(self, size=-1):
+            return self.body if size < 0 else self.body[:size]
+
+    logs = []
+
+    class CaptureLog(logging.Handler):
+        def emit(self, record):
+            logs.append(record.getMessage())
+
+    logger = logging.getLogger(ai_handler.__name__)
+    previous_level, previous_propagate = logger.level, logger.propagate
+    capture_log = CaptureLog()
+    logger.addHandler(capture_log)
+    logger.setLevel(logging.DEBUG)
+    logger.propagate = False
+    cfg = getConfig()
+    previous_key, previous_open = cfg["aiToken"], urllib.request.urlopen
+    old_language = sys.modules.get("languageHandler")
+    language = types.ModuleType("languageHandler")
+    language.getLanguage = lambda: "ar_EG"
+    sys.modules["languageHandler"] = language
+    requests = []
+    body = [
+        json.dumps({"candidates": [{"content": {"parts": [{"text": "First"}, {"text": "Second"}]}}]}).encode()
+    ]
+
+    def fake_open(request, timeout):
+        requests.append(request)
+        assert timeout == 15
+        if isinstance(body[0], Exception):
+            raise body[0]
+        return Response(body[0])
+
+    try:
+        cfg["aiToken"] = " SYNTHETIC_API_KEY "
+        urllib.request.urlopen = fake_open
+        result = ai_handler.analyze_dom_with_gemini(ai_sample())
+        assert result == "First\nSecond"
+        request = requests[-1]
+        assert "gemini-2.5-flash:generateContent" in request.full_url and "?key=" not in request.full_url
+        assert request.get_header("X-goog-api-key") == "SYNTHETIC_API_KEY"
+        serialized = request.data.decode()
+        assert len(serialized) <= 16000 and "ar_EG" in serialized
+        assert "Screen Reader Usage" in serialized and "Remediation Guide" in serialized
+        assert "SYNTHETIC_API_KEY" not in serialized and "SYNTHETIC_PRIVATE_VALUE" not in serialized
+        long_snapshot = ai_sample()
+        long_snapshot["native"]["name"]["value"] = (chr(92) + chr(34) + "ع") * 5000
+        long_snapshot["native"]["description"]["value"] = "غ" * 10000
+        ai_handler.analyze_dom_with_gemini(long_snapshot)
+        assert len(requests[-1].data.decode()) <= 16000
+        json.loads(requests[-1].data.decode())
+        errors = [
+            urllib.error.HTTPError(
+                "https://invalid.test/SYNTHETIC_API_KEY",
+                403,
+                "SYNTHETIC_PRIVATE_VALUE",
+                None,
+                io.BytesIO(b"SYNTHETIC_PRIVATE_VALUE"),
+            ),
+            urllib.error.URLError("SYNTHETIC_API_KEY"),
+            TimeoutError("SYNTHETIC_PRIVATE_VALUE"),
+            b'{"broken":"SYNTHETIC_API_KEY"',
+            b'{"candidates":[]}',
+            b'{"promptFeedback":{"blockReason":"SAFETY"}}',
+        ]
+        for error in errors:
+            body[0] = error
+            message = ai_handler.analyze_dom_with_gemini(ai_sample())
+            assert message and "SYNTHETIC_API_KEY" not in message and "SYNTHETIC_PRIVATE_VALUE" not in message
+        assert "SYNTHETIC_API_KEY" not in "\n".join(logs)
+        assert "SYNTHETIC_PRIVATE_VALUE" not in "\n".join(logs)
+        before = len(requests)
+        cfg["aiToken"] = ""
+        assert "API key" in ai_handler.analyze_dom_with_gemini(ai_sample())
+        assert len(requests) == before
+    finally:
+        logger.removeHandler(capture_log)
+        logger.setLevel(previous_level)
+        logger.propagate = previous_propagate
+        cfg["aiToken"], urllib.request.urlopen = previous_key, previous_open
+        if old_language is None:
+            sys.modules.pop("languageHandler", None)
+        else:
+            sys.modules["languageHandler"] = old_language
+
+
+@scenario("Phase 5: explicit AI uses report A after B, and output is escaped")
+def test_ai_report_identity():
+    import os
+    import threading
+    import api
+    import ui
+    import wx
+    from addon.globalPlugins.detailedElementInfo import GlobalPlugin, ai_handler, server
+    from addon.globalPlugins.detailedElementInfo.config import getConfig
+
+    cfg = getConfig()
+    previous_support = cfg["advancedSupport"]
+    cfg["advancedSupport"] = False
+    shown, sent = [], []
+    focus = [MockNVDAObject(name="AI Frozen A", IA2Attributes={"tag": "button"})]
+    foreground = [types.SimpleNamespace(name="page", processID=os.getpid() + 1, parent=None)]
+
+    class Immediate:
+        def __init__(self, target, **kwargs):
+            self.target = target
+
+        def start(self):
+            self.target()
+
+    def fake_ai(snapshot):
+        sent.append(snapshot)
+        return "<script>untrusted</script>"
+
+    patches = [
+        (api, "getFocusObject", lambda: focus[0]),
+        (api, "getForegroundObject", lambda: foreground[0]),
+        (ui, "browseableMessage", lambda text, **kw: shown.append((text, kw["title"]))),
+        (ui, "message", lambda text: None),
+        (wx, "CallAfter", lambda callback, *args, **kwargs: callback(*args, **kwargs)),
+        (threading, "Thread", Immediate),
+        (ai_handler, "analyze_dom_with_gemini", fake_ai),
+    ]
+    originals = [(m, k, getattr(m, k, None)) for m, k, _ in patches]
+    plugin = GlobalPlugin()
+    try:
+        for module, key, replacement in patches:
+            setattr(module, key, replacement)
+        plugin.script_showElementInfo(None)
+        title_a = shown[-1][1]
+        focus[0] = MockNVDAObject(name="AI Frozen B", IA2Attributes={"tag": "button"})
+        plugin.script_showElementInfo(None)
+        assert sent == []
+        server.get_ai_analysis()
+        assert sent == [], "Legacy no-argument API must not transmit global DOM data"
+        foreground[0] = types.SimpleNamespace(name=title_a, processID=os.getpid(), parent=None)
+        cfg["advancedSupport"] = True
+        plugin.script_analyzeElementAI(None)
+        assert len(sent) == 1 and sent[0]["native"]["name"]["value"] == "AI Frozen A"
+        assert "<script>" not in shown[-1][0] and "&lt;script&gt;" in shown[-1][0]
+        assert "advisory" in shown[-1][0].lower()
+        callbacks = []
+        wx.CallAfter = callbacks.append
+        plugin.script_analyzeElementAI(None)
+        count = len(shown)
+        plugin.terminate()
+        callbacks.pop(0)()
+        assert len(shown) == count
+    finally:
+        if plugin._is_alive:
+            plugin.terminate()
+        cfg["advancedSupport"] = previous_support
+        for module, key, original in originals:
+            if original is None:
+                delattr(module, key)
+            else:
+                setattr(module, key, original)
+
+
+@scenario("Phase 5: editable optional text is omitted when value evidence is unavailable")
+def test_ai_missing_editable_value():
+    from addon.globalPlugins.detailedElementInfo.ai_handler import build_ai_payload
+
+    for tag, editable, role in [
+        ("textarea", False, "EDITABLETEXT (textbox)"),
+        ("div", True, "BUTTON"),
+        (None, False, "EDITABLETEXT (textbox)"),
+    ]:
+        s = ai_sample()
+        s["aria"]["tag"]["value"] = tag
+        s["aria"]["nvda_role"]["value"] = role
+        s["native"]["value"].update(value=None, availability="error")
+        s["native"]["name"]["value"] = "PRIVATE_TYPED_WITHOUT_VALUE"
+        s["native"]["description"]["value"] = "PRIVATE_TYPED_WITHOUT_VALUE"
+        s["dom"]["properties"]["is_content_editable"] = editable
+        payload = build_ai_payload(s)
+        assert "PRIVATE_TYPED_WITHOUT_VALUE" not in json.dumps(payload)
+        assert payload["name"]["availability"] == "unavailable"
+
+
 def run_browser_checks():
     from pathlib import Path
     import json
@@ -2216,6 +2724,52 @@ def run_browser_checks():
     return 0 if all(outcomes.values()) else 1
 
 
+@scenario("Bridge: native browser eligibility fails closed")
+def test_native_browser_eligibility():
+    import types
+    from addon.globalPlugins.detailedElementInfo import GlobalPlugin, server
+    from addon.globalPlugins.detailedElementInfo.config import getConfig
+
+    cfg = getConfig()
+    previous = cfg["advancedSupport"]
+    cfg["advancedSupport"] = False
+    plugin = GlobalPlugin()
+    original = server.create_bridge_request
+    server.create_bridge_request = lambda **kwargs: (_ for _ in ()).throw(
+        AssertionError("Unsupported native browser reached Bridge")
+    )
+    try:
+        cfg["advancedSupport"] = True
+        for module in (
+            types.SimpleNamespace(appName="firefox"),
+            None,
+            types.SimpleNamespace(appName="msedge"),
+        ):
+            obj = MockNVDAObject(
+                appModule=module,
+                IA2Attributes={"tag": "button", "id": "probe", "document-url": "https://example.test/page"},
+            )
+            plugin._getCurrentObject = lambda: obj
+            captured = []
+            plugin._collectSnapshot(captured.append)
+            assert len(captured) == 1
+            assert captured[0]["availability"]["bridge_reason"] == "unsupported_native_browser"
+
+        class BrokenApplication(MockNVDAObject):
+            @property
+            def appModule(self):
+                raise RuntimeError("unavailable provider")
+
+        plugin._getCurrentObject = lambda: BrokenApplication()
+        captured = []
+        plugin._collectSnapshot(captured.append)
+        assert captured[0]["native"]["application_name"]["availability"] != "available"
+    finally:
+        server.create_bridge_request = original
+        cfg["advancedSupport"] = previous
+        plugin.terminate()
+
+
 def run_all_tests():
     passed = 0
     failed = 0
@@ -2232,7 +2786,7 @@ def run_all_tests():
             import traceback
 
             tb = traceback.format_exc()
-            print(f"[FAIL] {name}: {e or type(e).__name__}\n{tb}")
+            print(f"[FAIL] {name}: {e or type(e).__name__}\n{tb}", file=sys.stderr)
             failed += 1
             failures.append((name, str(e)))
 
