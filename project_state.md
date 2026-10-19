@@ -1,51 +1,29 @@
 # Project State
-
 Updated: 2026-10-19
 
-## Current Work
+## Current checkpoint
+Approved Phases 0-7 remain active. The user chose direct root repair after Antigravity's initial Phase 2 and Phase 2A repair failed independent review. Root repaired the evidenced defects and independent review found no new direct Phase 2 regression. Phase 3 is locally verified after independent review; Phase 4 is in progress. Phases 5-7 and human NVDA acceptance remain pending. Native milestone e928a6d is committed; subsequent work is uncommitted on feat/expanded-element-info. No push or PR.
 
-- 2026-10-19: Resolved Python 3.7 runtime typing blocker on `snapshot.py`. Replaced PEP 604 union (`|`) and PEP 585 builtin collection generics (`list[Any]`, `dict[str, Any]`) with standard `typing.Union`, `typing.Optional`, `typing.Dict`, `typing.List`, `typing.Mapping`, and `typing.Iterable` constructs to support the NVDA 2023.1 runtime floor (Python 3.7). Resolved dynamic collection typing diagnostics with boundary casts. Added scenario 21 (Regression 10) checking AST and runtime typing compatibility.
-- 2026-10-18: Phases 0 and 1 (serializable snapshot contract and native NVDA/IA2 property expansion) repaired following Codex review findings 1-10. Standalone runner (`scripts/run_tests.py`) verified 20 targeted scenarios across snapshot structure, empty/zero/false preservation, tri-state protection, raw attribute sanitization, guarded independent reads, single-capture root property reuse, relation generator bounded consumption, official relation names, form context boolean fidelity, language empty string preservation, and unique UUID capture IDs.
+## Implemented capture contract
+- One native target capture on UI thread; guarded getters, provenance and explicit availability preserve empty/false/zero.
+- Strict prior browser witness and pinned prepare/bind/collect/update handshake, exact document/frame/nonce identity, finite deadlines and generation cancellation. Missing reliable identity yields native-only with reason. A verified accepted result freezes historical facts.
+- Pagehide/pageshow invalidate activation; sender metadata required. Framework events are bounded untrusted advisory names.
+- Protected/indeterminate DOM text, markup, references and context omitted; legacy raw chrome_data cannot bypass sanitized HTML.
+- Shared native/DOM reference budget: 8 targets, 500 characters per excerpt, 4000 combined. High-level provider prefetch cannot be bounded by Python slicing; no invented API arguments.
+- Native header text preserved; DOM and native context stay separate. Bounded visible labels, language/direction, forms/groups, table spans/virtual indices and composite focus/selection. Editable descendants and validation echoes excluded. Overlapping marker ownership restores the original marker.
 
-## Decisions
+## Evidence and limits
+Default runner: 54/54. Optional actual Chrome 147.0.7727.138: 37/37 after direct repair and formatting. Real production JS and actual server/plugin callback paths exercised with external API boundaries replaced; these checks are not NVDA acceptance. No Google requests.
+Targeted Python 3.7 audit/server/snapshot: 0 errors/0 warnings. Black and flake8 pass on six touched Python files. SCons build succeeds; final package must be rebuilt after later phases. Full Pyright has 1816 errors over 13 actual files (original baseline 726); unresolved, not all attributable to NVDA stubs. The 29 audit.py reports ask for post-3.7 typing syntax because the global default targets build-tool Python; audit.py is clean at Python 3.7. .tmp backups excluded from typing analysis. Final build/gates pending.
 
-- Support NVDA 2023.1 runtime floor (Python 3.7) in all production add-on code under `addon/`. Build-tooling requirements in `pyproject.toml` (>=3.13) govern developer linting/packaging tools only, not add-on runtime execution.
-- In `snapshot.py`, use Python 3.7-compatible `typing` constructs: `ObservationValue = Optional[Union[bool, int, float, str, List[Any], Dict[str, Any]]]`, `Dict[str, Any]`, and boundary `cast` for dynamic iterables/mappings in `sanitize_value`.
-- Preserve the full feature scope while ordering work as contract, native properties, verified Bridge enrichment, bounded audit/contrast, shared reports, explicit Gemini analysis, documentation reconciliation, and acceptance.
-- Use a single sanitized snapshot for one captured inspection target; capture root provider properties ONCE during snapshot construction and derive target identity, native section, aria section, context, and legacy compatibility fields from the captured snapshot without redundant live re-reads.
-- Implement explicit tri-state protection logic (`PROTECTION_PROTECTED`, `PROTECTION_UNPROTECTED`, `PROTECTION_INDETERMINATE`). Positive non-protection must be established before reading `obj.value`; bare/indeterminate objects never read `obj.value`.
-- Redact/strip private `"value"` from IA2 attributes (`rawAttrs` and `aria.raw_attributes`) whenever protection is protected or indeterminate, preventing password leakage into serialized snapshots and HTML reports while preserving unrelated attributes.
-- Use guarded reads (`_safe_read`) catching `NotImplementedError` as `unsupported` and other exceptions as `error` across all provider boundaries (`name`, `role`, `positionInfo`, table coordinates, `IA2Attributes`).
-- Consume IA2 relation generators boundedly using `itertools.islice`, capping at 8 items and recording `truncated=True` if a 9th item exists; wrap streaming iteration to preserve partial results upon deferred stream errors.
-- Query official NVDA 2026.1 `RelationType` names: `controls` queries `controllerFor` (`RelationType.CONTROLLER_FOR`), `errormessage` queries `error` (`RelationType.ERROR`), `labelledby` queries `labelledBy`, and `details` queries `details`. Treat unsupported types (such as `describedBy`) as `unsupported`.
-- Preserve separately sourced native states and IA2 attributes in form context; parse explicit string `"false"` to `False` rather than `True`, and mark unreadable native states as `unavailable`/`error` rather than inventing `False`.
-- In language context, preserve explicit empty string `""` as available, and keep `declared_lang` marked as `source="dom", availability="unavailable"` in native milestone until DOM inspection is active.
-- Generate unique UUID4 capture IDs (`str(uuid.uuid4())`) to avoid timestamp collisions.
-- Keep `analyzer.analyze(obj)` backwards compatible: returns legacy flat keys derived from the snapshot while attaching `"snapshot": snapshot`.
-- Add minimal compatibility seam to `ReportBuilder.buildReport` and `_formatElement` to accept legacy analyzed dictionaries carrying a snapshot and live NVDAObjects. Direct snapshot rendering is reserved for Phase 4.
+## Decisions for continuation
+- Runtime Python 3.7 / NVDA 2023.1 floor; stdlib + NVDA only. Playwright in requirements.txt is optional developer browser verification, never bundled.
+- Snapshot sections: target/native/aria/dom/layout/context/audit/availability; renderers/AI consume frozen facts only.
+- Four future section booleans default true only if absent; preserve user values.
+- Markdown copy remains unbound by default: proposed NVDA+Ctrl+Shift+F1 conflicts with NVDA log-fragment command. Announce only successful api.copyToClip. Several modeless reports require separate frozen identities.
+- AI only explicit Alt+F1; allowlist, duplicate-sensitive-text redaction and 16000-character valid JSON cap; new context never implicitly expands disclosure.
+- Observation extension deferred. Preserve version, buildVars.py, locales and existing settings.
+- Force-add scripts/element_info_fixture.html when committing; generic *.html ignore otherwise hides it.
 
-## Evidence and Limits
-
-- Local verification completed:
-  - `scripts/run_tests.py`: 24 passed, 0 failed, exit code 0.
-  - `uv run --no-sync pyright --pythonversion 3.7 addon/globalPlugins/detailedElementInfo/snapshot.py`: 0 errors, 0 warnings, exit code 0.
-  - `uv run --no-sync ruff check addon/ scripts/`: 0 errors on changed files; 11 pre-existing E402 reports on `addon/__init__.py`.
-  - `uv run --no-sync pyright --outputjson`: 12 files analyzed, total 1285 errors across 11 files (exit code 1; baseline 726 over 10 files):
-    - `__init__.py`: 114 (baseline)
-    - `ai_handler.py`: 17 (baseline)
-    - `config.py`: 22 (baseline)
-    - `debug.py`: 6 (baseline)
-    - `elementAnalyzer.py`: 422 (new helper diagnostics remain; not solely missing NVDA stubs)
-    - `reportBuilder.py`: 177 (baseline)
-    - `roleMaps.py`: 53 (baseline)
-    - `server.py`: 14 (baseline)
-    - `settingsPanel.py`: 139 (baseline)
-    - `snapshot.py`: 15 (all 15 are `reportDeprecated` under Python 3.13 tooling config; 0 errors under Python 3.7 runtime check)
-    - `scripts/run_tests.py`: 306 (new test runner with dynamic mocks)
-  - `git diff --check`: exit code 0 (clean).
-  - `uv run --no-sync scons`: exit code 0 (`detailedElementInfo-1.1.0.nvda-addon` generated).
-- Code written and local verification passed does not equal human NVDA acceptance; testing in real NVDA on Windows remains mandatory.
-
-## Next Step
-
-Native local review is complete after four reviewer repairs: captured safe URL derivation retained for legacy reports; language read guarded once; incomplete relation summaries carry error/partial evidence; missing captured names are not re-read. Regression runner reproduced four failures before repairs and passes 24/24 afterward. Phase 2 may proceed under existing authorization; human NVDA acceptance remains pending, as do Phases 2-7.
+## Next step
+Implement pure HTML/Markdown/settings/copy, then explicit sanitized Gemini, bilingual docs and final local verification. Phase 3 findings retain source/evidence and limited applicability: unestablished visible-label associations remain unknown; ambiguous mathematical labels remain unknown. Contrast supports only bounded uniform direct text with opaque sRGB and rejects unresolved paint, overlays, shadows, generated content, filters and content-visibility. Per-element findings never certify a page. Human screen-reader acceptance is a separate release gate.

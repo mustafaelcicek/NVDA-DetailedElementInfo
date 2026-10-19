@@ -10,7 +10,7 @@
 
 **Spec:** This document incorporates the 2026-10-18 review; repository constraints are in [AGENTS.md](AGENTS.md), [CLAUDE.md](CLAUDE.md), and [CONTRIBUTING.md](CONTRIBUTING.md).
 
-**Status:** Phases 0-1 code written and independently checked locally on 2026-10-19; remaining implementation authorized. Live NVDA acceptance is pending throughout. Phase checklists below retain acceptance requirements until evidenced.
+**Status:** Direct reviewer repair of Phases 1-2 is locally verified (49 scenarios, 18 actual Chrome cases and independent review); human NVDA acceptance remains pending. Phase 3 is locally verified (54 scenarios and 37 actual Chrome cases) after independent review. Phase 4 is in progress; Phases 5-7 and human NVDA acceptance remain pending.
 
 ## Global Constraints
 

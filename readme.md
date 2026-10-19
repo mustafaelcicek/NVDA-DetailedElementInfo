@@ -97,18 +97,21 @@ Open **NVDA menu > Preferences > Settings > Detailed Element Info** to configure
 
 Detailed Element Info can optionally connect to a companion Chrome extension to look beyond NVDA's virtual buffer and read the page's real DOM.
 
-- When Advanced Support is enabled, the add-on starts a lightweight local server (`127.0.0.1:63333`) that talks to the Chrome extension using HTTP long polling.
-- The report then includes an **Active element's DOM attributes** section with the live HTML attributes and properties fetched from Chrome.
+- When Advanced Support is enabled, the add-on starts a local server at `127.0.0.1:63333` and requests element data from the Chrome extension.
+- Bridge capture now requires a previously witnessed top-level document and a pinned handshake; uncertain identity, unsupported frames or timeout retain native information.
+- Capture records bounded labels, language/direction, form/group, table and composite context with separate native/DOM sources. Protected or uncertain protection omits DOM text/markup/context. Editable text and validation-message echoes are excluded; reference summaries share eight targets and 4000 characters.
+- Local capture checks and independent review have passed. Human NVDA acceptance remains pending. Pure local checks for computed names, image alternatives, label-in-name, click diagnostics and conservative direct-text contrast are written; the structured report/export presentation is still being implemented. These checks do not certify a page or establish overall WCAG conformance.
+- See the [cumulative changelog](changelog.md) for the local implementation status.
 - Download `detailedElementInfo-chrome-bridge.zip` from the matching GitHub release and extract it. Then open `chrome://extensions`, enable **Developer mode**, choose **Load unpacked**, and select the extracted `Bridge` folder.
 - The extension runs on web pages so it can inspect the matched element. Browser-internal pages such as `chrome://` pages cannot be inspected.
-- This feature is experimental and under active development.
+- This feature is experimental and under active development; live correlation, matching boundaries, and security filters are being hardened.
 
 ## AI Analysis with Gemini (Experimental)
 
 With Advanced Support enabled and a Gemini API key set, open an element report and press **Alt+F1** to request an AI analysis.
 
 - Only an explicit Alt+F1 request sends the collected DOM data to Google Gemini, which returns a short, plain-language explanation of what the element is, its purpose, and how a screen reader user can interact with it.
-- The Bridge redacts password-field values before returning DOM data, but other element text, attributes, values, and markup may be included. Review the focused element before requesting AI analysis.
+- The current private-data filtering is incomplete. Element text, attributes, values, and markup may be sent. Inspect only non-private data before requesting AI analysis.
 - This requires your own Google Gemini API key, entered in the settings. The feature is experimental.
 
 ## Technical Details
@@ -124,6 +127,12 @@ This add-on utilizes a **zero-dependency native architecture**:
 ## Author
 
 Mustafa Elçiçek <mustafaelcicek5656@gmail.com>
+
+## Implementation contributor
+
+- Kamal Yaser
+- Email: [kamalyaser31@gmail.com](mailto:kamalyaser31@gmail.com)
+- Telegram: [@kamalyaser31](https://t.me/kamalyaser31)
 
 ## Supported NVDA Versions
 

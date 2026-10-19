@@ -1,0 +1,3 @@
+# Optional developer browser verification only; never bundle this in the NVDA add-on.
+# Runtime dependencies are Python's standard library and NVDA host APIs.
+playwright

@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-#bu dosyada da filtrelemeyi farklı bir şekilde yapacağım, sürekli if koşulunda bırakmayacağım. 
+# bu dosyada da filtrelemeyi farklı bir şekilde yapacağım, sürekli if koşulunda bırakmayacağım.
 from .config import getConfig, getBool
 import addonHandler
+
 addonHandler.initTranslation()
 
 
@@ -21,14 +22,10 @@ ANALYZER_VALUE_LABELS = {
     "native HTML": _("native HTML"),
     "no native semantics detected": _("no native semantics detected"),
     "not applicable": _("not applicable"),
-    "no native role to mismatch; explicit role used": _(
-        "no native role to mismatch; explicit role used"
-    ),
+    "no native role to mismatch; explicit role used": _("no native role to mismatch; explicit role used"),
     "no": _("no"),
     "no; explicit role is redundant": _("no; explicit role is redundant"),
-    "yes; explicit role differs from native role": _(
-        "yes; explicit role differs from native role"
-    ),
+    "yes; explicit role differs from native role": _("yes; explicit role differs from native role"),
 }
 
 
@@ -44,7 +41,7 @@ class ReportBuilder:
             "<head><meta http-equiv='x-ua-compatible' content='IE=edge'></head>",
             "<body>",
             f"<h1>{_('Detailed Element Info')}</h1>",
-            f"<h2>{_('Current element')}</h2>"
+            f"<h2>{_('Current element')}</h2>",
         ]
 
         if isinstance(obj, dict) and "rawAttrs" in obj:
@@ -58,20 +55,41 @@ class ReportBuilder:
 
         if getBool(cfg, "advancedSupport"):
             try:
-                from . import server
                 import html as html_lib
-                chrome_data = server.get_latest_dom_data()
+
+                chrome_data = None
+                if isinstance(current_data.get("snapshot"), dict):
+                    dom_sec = current_data["snapshot"].get("dom", {})
+                    if dom_sec.get("availability") == "available":
+                        chrome_data = dom_sec.get("properties", {})
                 if chrome_data and isinstance(chrome_data, dict):
                     html.append(f"<h2>{_('Active element DOM attributes')}</h2>")
                     html.append("<ul>")
-                    for key, value in chrome_data.items():
-                        html.append(f"<li>{html_lib.escape(str(key))}={html_lib.escape(self._shorten(value))}</li>")
+                    for key, value in sorted(chrome_data.items()):
+                        if key in (
+                            "frameworkEvents",
+                            "aria_idrefs",
+                            "context",
+                            "bounds",
+                            "viewport_intersection",
+                            "visibility",
+                        ):
+                            continue
+                        html.append(
+                            f"<li>{html_lib.escape(str(key))}={html_lib.escape(self._shorten(value))}</li>"
+                        )
                     html.append("</ul>")
             except Exception:
                 pass
 
-        if getBool(cfg, "showAncestors") and live_obj is not None:
-            ancestors = self.analyzer.ancestors(live_obj)
+        if getBool(cfg, "showAncestors"):
+            frozen = current_data.get("frozen_ancestors")
+            if frozen is not None:
+                ancestors = frozen
+            elif live_obj is not None:
+                ancestors = self.analyzer.ancestors(live_obj)
+            else:
+                ancestors = []
 
             if ancestors:
                 html.append(f"<h2>{_('Ancestor elements')}</h2>")
@@ -151,12 +169,8 @@ class ReportBuilder:
             html.append(f"<li>{_('Semantic source: {}').format(semanticSource)}</li>")
 
         if getBool(cfg, "showNativeSemanticMismatch"):
-            nativeSemanticMismatch = self._translateAnalyzerValue(
-                data["nativeSemanticMismatch"]
-            )
-            html.append(
-                f"<li>{_('Native semantic mismatch: {}').format(nativeSemanticMismatch)}</li>"
-            )
+            nativeSemanticMismatch = self._translateAnalyzerValue(data["nativeSemanticMismatch"])
+            html.append(f"<li>{_('Native semantic mismatch: {}').format(nativeSemanticMismatch)}</li>")
 
         if getBool(cfg, "showMsaaRole") and data["msaaRole"] is not None:
             html.append(f"<li>{_('MSAA role: {}').format(self._formatMsaaRole(data['msaaRole']))}</li>")

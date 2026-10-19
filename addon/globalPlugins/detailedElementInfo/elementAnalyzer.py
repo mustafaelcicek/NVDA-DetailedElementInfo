@@ -1,9 +1,11 @@
 import itertools
+from typing import Any, Dict, Optional
 import uuid
 import controlTypes
 
 try:
     import logHandler
+
     log = logHandler.log
 except Exception:
     log = None
@@ -229,15 +231,261 @@ class ElementAnalyzer:
         nvdaRole = self._computeNvdaRoleString(role_val)
         finalRole = self.getFinalRole(explicitRole, nativeRole, nvdaRole)
 
+        reference_budget = {"targets_remaining": 8, "characters_remaining": 4000, "truncated": False}
+        snapshot["availability"]["reference_budget"] = reference_budget
         # ARIA Section
         snapshot["aria"] = self._build_aria_section(
-            obj, raw_attrs, derived_attrs, tag, explicitRole, nativeRole, nvdaRole, finalRole
+            obj,
+            raw_attrs,
+            derived_attrs,
+            tag,
+            explicitRole,
+            nativeRole,
+            nvdaRole,
+            finalRole,
+            reference_budget,
         )
 
         # Context Section
         snapshot["context"] = self._build_context_section(
-            obj, raw_attrs, states_val, states_avail, pos_val, pos_avail
+            obj, raw_attrs, states_val, states_avail, pos_val, pos_avail, reference_budget
         )
+
+        return snapshot
+
+    def build_target_info(self, snapshot: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Build target criteria dictionary for Bridge matching from captured snapshot evidence.
+        Never re-reads live NVDA target properties.
+        """
+        target_id = snapshot.get("target", {}).get("target_identity", {})
+        aria = snapshot.get("aria", {})
+        native = snapshot.get("native", {})
+        location_obs = native.get("location", {})
+        loc_val = location_obs.get("value")
+
+        target_info: Dict[str, Any] = {
+            "name": target_id.get("name") or "",
+            "role": target_id.get("role_name") or "",
+            "role_value": target_id.get("role") if target_id.get("role") is not None else -1,
+            "tag": aria.get("tag", {}).get("value") or "",
+            "id": aria.get("id", {}).get("value") or "",
+            "class": aria.get("class_name", {}).get("value") or "",
+            "nvda_selector": self.domPathSegment(aria.get("raw_attributes", {})),
+            "protection": native.get("value", {}).get("protection", PROTECTION_INDETERMINATE),
+            "reference_budget": dict(snapshot.get("availability", {}).get("reference_budget", {})),
+        }
+
+        if isinstance(loc_val, (list, tuple)) and len(loc_val) >= 4:
+            target_info["width"] = loc_val[2]
+            target_info["height"] = loc_val[3]
+
+        return target_info
+
+    def get_expected_document_url(self, obj: Any, snapshot: Optional[Dict[str, Any]] = None) -> Optional[str]:
+        """
+        Capture reliable expected document URL using captured snapshot evidence
+        or bounded ancestor traversal (up to 32) on the NVDA UI thread.
+        """
+        if snapshot is not None:
+            doc_id = snapshot.get("target", {}).get("document_identity")
+            if isinstance(doc_id, dict) and doc_id.get("url"):
+                return str(doc_id["url"])
+            raw_attrs = snapshot.get("aria", {}).get("raw_attributes", {})
+            if "document-url" in raw_attrs and raw_attrs["document-url"]:
+                return str(raw_attrs["document-url"])
+            tag = raw_attrs.get("tag", "").strip().lower()
+            if tag == "#document":
+                val_obs = snapshot.get("native", {}).get("value", {})
+                if val_obs.get("availability") == AVAIL_AVAILABLE and val_obs.get("value"):
+                    return str(val_obs["value"])
+
+        if obj is None:
+            return None
+
+        try:
+            current = getattr(obj, "parent", None)
+            depth = 0
+            while current is not None and depth < 32:
+                depth += 1
+                try:
+                    attrs = self.getRawAttrs(current)
+                except Exception:
+                    attrs = {}
+
+                tag = attrs.get("tag", "").strip().lower()
+                if tag == "#document":
+                    doc_url = attrs.get("document-url")
+                    if doc_url:
+                        return str(doc_url)
+                    if not self._check_is_protected(current):
+                        try:
+                            val = getattr(current, "value", None)
+                            if val:
+                                return str(val)
+                        except Exception:
+                            pass
+                    break
+
+                try:
+                    current = current.parent
+                except Exception:
+                    break
+        except Exception:
+            pass
+
+        return None
+
+    def enrich_snapshot_with_dom(self, snapshot: Dict[str, Any], dom_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Enrich captured snapshot with verified Chrome Bridge response data.
+        Freezes DOM, layout, ARIA IDREFs, and 5 context groups.
+        """
+        if not isinstance(dom_data, dict):
+            return snapshot
+
+        if dom_data.get("error"):
+            snapshot["availability"]["bridge"] = AVAIL_ERROR
+            return snapshot
+
+        snapshot["availability"]["bridge"] = AVAIL_AVAILABLE
+
+        import copy
+
+        # Deepcopy to prevent mutating original caller data
+        dom_data = copy.deepcopy(dom_data)
+
+        # Fail-closed protection check
+        val_obs = snapshot.get("native", {}).get("value", {})
+        protection = val_obs.get("protection")
+        is_protected = (
+            protection is None or protection != PROTECTION_UNPROTECTED or val_obs.get("protected") is True
+        )
+
+        if is_protected:
+            # Never parse private markup to guess which portions contain a value.
+            dom_data["value"] = None
+            dom_data["attributes"] = {}
+            dom_data["innerText"] = None
+            dom_data["outerHTML"] = None
+            dom_data["aria_idrefs"] = {}
+            dom_data["frameworkEvents"] = {}
+            dom_data["context"] = {}
+
+        # 1. Target Identities
+        doc_nonce = dom_data.get("documentNonce")
+        snapshot["target"]["element_identity"] = {
+            "tag": dom_data.get("tag"),
+            "id": dom_data.get("id"),
+            "class_name": dom_data.get("className"),
+            "nonce": doc_nonce,
+        }
+        snapshot["target"]["document_identity"] = {
+            "url": dom_data.get("document_url"),
+            "title": dom_data.get("document_title"),
+            "nonce": doc_nonce,
+        }
+        snapshot["target"]["frame_identity"] = {
+            "frame_id": dom_data.get("frame_id"),
+            "is_top_frame": dom_data.get("is_top_frame"),
+            "supported": dom_data.get("frame_supported"),
+        }
+
+        # 2. DOM Section
+        snapshot["dom"]["availability"] = AVAIL_AVAILABLE
+        snapshot["dom"]["attributes"] = dom_data.get("attributes", {})
+        snapshot["dom"]["properties"] = {
+            "tab_index": dom_data.get("tabIndex"),
+            "is_content_editable": dom_data.get("isContentEditable"),
+            "disabled": dom_data.get("disabled"),
+            "hidden": dom_data.get("hidden"),
+            "inert": dom_data.get("inert"),
+            "is_connected": dom_data.get("isConnected"),
+            "tag_name": dom_data.get("tag"),
+            "inner_text_excerpt": dom_data.get("innerText"),
+            "value": dom_data.get("value"),
+            "safe_outer_html": dom_data.get("outerHTML"),
+            "inline_events": dom_data.get("inlineEvents", {}),
+            "framework_events": dom_data.get("frameworkEvents", {}),
+        }
+        snapshot["dom"]["aria_idrefs"] = dom_data.get("aria_idrefs", {})
+
+        # 3. Layout Section
+        snapshot["layout"]["availability"] = AVAIL_AVAILABLE
+        snapshot["layout"]["bounds"] = dom_data.get("bounds")
+        snapshot["layout"]["viewport_intersection"] = dom_data.get("viewport_intersection")
+        snapshot["layout"]["visibility"] = dom_data.get("visibility")
+        snapshot["layout"]["styles"] = dom_data.get("css", {})
+        snapshot["layout"]["contrast"] = dom_data.get("contrast")
+
+        # Keep each DOM observation separate from native/IA2 evidence.
+        dom_context = dom_data.get("context", {})
+        if isinstance(dom_context, dict):
+            label = dom_context.get("visible_label")
+            if isinstance(label, dict):
+                label_availability = label.get("availability", AVAIL_UNAVAILABLE)
+                if label_availability not in (
+                    AVAIL_AVAILABLE,
+                    AVAIL_UNAVAILABLE,
+                    AVAIL_ERROR,
+                    AVAIL_UNSUPPORTED,
+                ):
+                    label_availability = AVAIL_UNAVAILABLE
+                snapshot["context"]["visible_label"] = create_observation(
+                    label.get("candidate_text"),
+                    SOURCE_DOM,
+                    label_availability,
+                    source_element=label.get("source_element"),
+                    applicability_evidence=label.get("applicability_evidence"),
+                    candidates=label.get("candidates"),
+                    truncated=label.get("truncated", False),
+                )
+            aliases = {
+                "aria_activedescendant": "active_descendant",
+                "is_selected": "selected",
+                "is_focused": "focused",
+                "disabled": "disabled",
+            }
+            for group in ("language", "form", "table", "composite"):
+                values = dom_context.get(group)
+                if not isinstance(values, dict):
+                    continue
+                destination = snapshot["context"].setdefault(group, {})
+                for key, value in values.items():
+                    observation = create_observation(
+                        value,
+                        SOURCE_DOM,
+                        AVAIL_AVAILABLE if value is not None else AVAIL_UNAVAILABLE,
+                    )
+                    if group == "table" and key in ("row_count", "column_count") and value == -1:
+                        observation = create_observation(
+                            None, SOURCE_DOM, AVAIL_UNAVAILABLE, reason="unknown_total", declared_value=-1
+                        )
+                        destination["declared_" + key] = create_observation(-1, SOURCE_DOM, AVAIL_AVAILABLE)
+                    dom_key = "dom_" + aliases.get(key, key)
+                    destination[dom_key] = observation
+                    original = destination.get(key)
+                    if not isinstance(original, dict) or original.get("availability") != AVAIL_AVAILABLE:
+                        destination[key] = observation
+                if group == "composite":
+                    active = values.get("aria_activedescendant")
+                    destination["active_descendant"] = create_observation(
+                        active,
+                        SOURCE_DOM,
+                        AVAIL_AVAILABLE if active is not None else AVAIL_UNAVAILABLE,
+                        resolved=values.get("resolved_activedescendant"),
+                    )
+        usage = dom_data.get("reference_budget", {})
+        remaining = snapshot["availability"].get("reference_budget")
+        if isinstance(usage, dict) and isinstance(remaining, dict):
+            for used_key, remaining_key in (
+                ("targets_used", "targets_remaining"),
+                ("characters_used", "characters_remaining"),
+            ):
+                used = usage.get(used_key)
+                if type(used) is int and used >= 0:
+                    remaining[remaining_key] = max(0, remaining[remaining_key] - used)
+            remaining["truncated"] = remaining["truncated"] or usage.get("truncated") is True
 
         return snapshot
 
@@ -259,9 +507,7 @@ class ElementAnalyzer:
             return None, AVAIL_UNAVAILABLE
         return val, AVAIL_AVAILABLE
 
-    def _evaluate_protection(
-        self, is_prot_val, is_prot_avail, states_val, states_avail, role_val, raw_attrs
-    ):
+    def _evaluate_protection(self, is_prot_val, is_prot_avail, states_val, states_avail, role_val, raw_attrs):
         """
         Evaluate protection tri-state:
         - PROTECTION_PROTECTED: positive evidence of protection.
@@ -276,8 +522,7 @@ class ElementAnalyzer:
             try:
                 prot_state = getattr(controlTypes.State, "PROTECTED", None)
                 if prot_state is not None and (
-                    prot_state in states_val
-                    or getattr(prot_state, "name", None) in states_val
+                    prot_state in states_val or getattr(prot_state, "name", None) in states_val
                 ):
                     return PROTECTION_PROTECTED
             except Exception:
@@ -356,68 +601,73 @@ class ElementAnalyzer:
 
         return enumName
 
-    def _retrieve_relation(self, obj, rel_type_str):
-        """
-        Retrieve IA2 relation targets boundedly and safely.
-        Supports generators and lists.
-        Caps targets at 8 and marks truncated=True if more targets exist.
-        Preserves partial results if an exception occurs during streaming.
-        """
-        if not hasattr(obj, "_getIA2RelationTargetsOfType"):
-            return None, AVAIL_UNSUPPORTED, False
-
+    def _retrieve_relation(self, obj, rel_type_str, budget=None):
+        """Bound Python target consumption; the NVDA provider may prefetch internally."""
+        if budget is None:
+            budget = {"targets_remaining": 8, "characters_remaining": 4000, "truncated": False}
+        limit = budget["targets_remaining"]
+        if limit <= 0 or budget["characters_remaining"] <= 0:
+            budget["truncated"] = True
+            return None, AVAIL_UNAVAILABLE, True
+        query, availability = self._safe_read(obj, "_getIA2RelationTargetsOfType")
+        if not callable(query):
+            return None, availability if availability == AVAIL_ERROR else AVAIL_UNSUPPORTED, False
         try:
-            targets_iterable = obj._getIA2RelationTargetsOfType(rel_type_str)
+            targets = query(rel_type_str)
+            iterator = iter(targets)
         except ValueError:
             return None, AVAIL_UNSUPPORTED, False
         except Exception:
-            self._logDebug("COM boundary error querying relation {}".format(rel_type_str))
             return None, AVAIL_ERROR, False
-
         summaries = []
         truncated = False
         saw_error = False
-
         try:
-            iterator = iter(targets_iterable)
-            for item in itertools.islice(iterator, 9):
-                if len(summaries) >= 8:
+            for item in itertools.islice(iterator, limit + 1):
+                if budget["targets_remaining"] <= 0 or budget["characters_remaining"] <= 0:
                     truncated = True
                     break
-                try:
-                    name_val = getattr(item, "name", None)
-                except Exception:
-                    name_val = None
+                budget["targets_remaining"] -= 1
+                name, name_availability = self._safe_read(item, "name")
+                role, role_availability = self._safe_read(item, "role")
+                if name_availability == AVAIL_ERROR or role_availability == AVAIL_ERROR:
                     saw_error = True
-                try:
-                    role_val = getattr(item, "role", None)
-                    role_str = str(role_val) if role_val is not None else None
-                except Exception:
-                    role_str = None
-                    saw_error = True
-
-                summaries.append({
-                    "name": name_val,
-                    "role": role_str,
-                })
+                if isinstance(name, str):
+                    cap = min(500, budget["characters_remaining"])
+                    excerpt = name[:cap]
+                    budget["characters_remaining"] -= len(excerpt)
+                    truncated = truncated or len(name) > cap
+                else:
+                    excerpt = None
+                summaries.append({"name": excerpt, "role": str(role) if role is not None else None})
         except ValueError:
             if not summaries:
                 return None, AVAIL_UNSUPPORTED, False
             saw_error = True
         except Exception:
             saw_error = True
-            self._logDebug(
-                "Exception while consuming relation targets for {}".format(rel_type_str)
-            )
-
+        budget["truncated"] = budget["truncated"] or truncated
         if summaries:
             return summaries, AVAIL_ERROR if saw_error else AVAIL_AVAILABLE, truncated
-        elif saw_error:
-            return None, AVAIL_ERROR, False
-        else:
-            return [], AVAIL_UNAVAILABLE, False
+        return None if saw_error else [], AVAIL_ERROR if saw_error else AVAIL_UNAVAILABLE, truncated
 
-    def _get_ia2_relations(self, obj):
+    def _native_header_text(self, obj, attribute, budget):
+        if budget["targets_remaining"] <= 0 or budget["characters_remaining"] <= 0:
+            budget["truncated"] = True
+            return create_observation(None, SOURCE_NVDA, AVAIL_UNAVAILABLE, truncated=True)
+        budget["targets_remaining"] -= 1
+        text, availability = self._safe_read(obj, attribute)
+        if not isinstance(text, str):
+            budget["targets_remaining"] += 1
+            return create_observation(None, SOURCE_NVDA, availability)
+        cap = min(500, budget["characters_remaining"])
+        excerpt = text[:cap]
+        budget["characters_remaining"] -= len(excerpt)
+        truncated = len(text) > cap
+        budget["truncated"] = budget["truncated"] or truncated
+        return create_observation(excerpt, SOURCE_NVDA, availability, truncated=truncated)
+
+    def _get_ia2_relations(self, obj, budget):
         relations = {}
         mapping = [
             ("labelledby", "labelledBy"),
@@ -427,7 +677,7 @@ class ElementAnalyzer:
             ("errormessage", "error"),
         ]
         for rel_key, rel_type_str in mapping:
-            val, avail, truncated = self._retrieve_relation(obj, rel_type_str)
+            val, avail, truncated = self._retrieve_relation(obj, rel_type_str, budget)
             extra = {}
             if truncated:
                 extra["truncated"] = True
@@ -449,7 +699,16 @@ class ElementAnalyzer:
         return None, AVAIL_UNAVAILABLE
 
     def _build_aria_section(
-        self, obj, rawAttrs, derivedAttrs, tag, explicitRole, nativeRole, nvdaRole, finalRole
+        self,
+        obj,
+        rawAttrs,
+        derivedAttrs,
+        tag,
+        explicitRole,
+        nativeRole,
+        nvdaRole,
+        finalRole,
+        reference_budget,
     ):
         aria = {
             "explicit_role": create_observation(
@@ -570,12 +829,12 @@ class ElementAnalyzer:
                 AVAIL_AVAILABLE if "valuetext" in rawAttrs else AVAIL_UNAVAILABLE,
             ),
             # Relations
-            "relations": self._get_ia2_relations(obj),
+            "relations": self._get_ia2_relations(obj, reference_budget),
         }
         return aria
 
     def _build_context_section(
-        self, obj, raw_attrs, states_val, states_avail, pos_val, pos_avail
+        self, obj, raw_attrs, states_val, states_avail, pos_val, pos_avail, reference_budget
     ):
         visible_label = create_observation(
             None,
@@ -685,6 +944,8 @@ class ElementAnalyzer:
             "column_span": create_observation(col_span, SOURCE_NVDA, col_span_avail),
             "row_count": create_observation(row_cnt, SOURCE_NVDA, row_cnt_avail),
             "column_count": create_observation(col_cnt, SOURCE_NVDA, col_cnt_avail),
+            "row_header_text": self._native_header_text(obj, "rowHeaderText", reference_budget),
+            "column_header_text": self._native_header_text(obj, "columnHeaderText", reference_budget),
             "row_headers": create_observation(None, SOURCE_NVDA, AVAIL_UNAVAILABLE),
             "column_headers": create_observation(None, SOURCE_NVDA, AVAIL_UNAVAILABLE),
         }
@@ -732,7 +993,6 @@ class ElementAnalyzer:
             "composite": composite_ctx,
         }
 
-
     def getRawAttrs(self, obj):
         """
         Return IA2 attributes only.
@@ -760,7 +1020,7 @@ class ElementAnalyzer:
                 if tag == "a" and getattr(obj, "value", None) and "href" not in attrs:
                     attrs["href"] = obj.value
 
-                elif tag == "#document" and getattr(obj, "value", None):
+                elif tag == "#document" and getattr(obj, "value", None) and "document-url" not in attrs:
                     attrs["document-url"] = obj.value
         except Exception:
             self._logDebug("Could not derive href or document-url from object value")
@@ -987,10 +1247,7 @@ class ElementAnalyzer:
             classes = [c for c in classAttr.split() if c]
 
             if classes:
-                classPart = "".join(
-                    '[class~="{}"]'.format(self._escapeSelectorPart(c))
-                    for c in classes[:2]
-                )
+                classPart = "".join('[class~="{}"]'.format(self._escapeSelectorPart(c)) for c in classes[:2])
                 return "{}{}".format(segment, classPart)
 
         nameAttr = attrs.get("name", "").strip()

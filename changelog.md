@@ -1,11 +1,19 @@
 # Changelog
 
+- 2026-10-19: Add deterministic, sourced per-element name/image/label/click checks and conservative production-JavaScript text contrast; preserve unknown applicability and meaningful mathematical symbols. Human NVDA acceptance remains pending.
+
+- 2026-10-19: Repair Bridge document binding, protected-data omission, shared reference budgets and contextual evidence directly after independent review; retain 49 local scenarios and 18 optional production-JavaScript Chrome checks. Human NVDA acceptance remains pending.
+
+- 2026-10-19: Reject the Phase 2A repair after independent review confirmed remaining document-binding, schema, protected-markup and advisory-message defects; retain the draft uncommitted and await the user's choice before a third attempt.
 - 2026-10-19: Repair native snapshot review regressions in safe link URL reuse, guarded language reads, partial relation evidence, and single-capture missing names; add focused regression cases.
 
 All notable changes to this project will be documented in this file.
 
 ## Implementation - 2026-10-19
 
+- Draft Phase 2 Bridge collection and lifecycle changes; neither the initial delivery nor its Phase 2A repair passed independent review.
+- Preserve the verified URL query/path, duplicate-ID, generation-invalidation and deepcopy improvements; document the remaining binding, privacy, context and shared-budget defects in project_state.md.
+- Expand the standalone runner to 42 passing scenarios and add real-source JavaScript helper tests; independent probes still expose failures outside their coverage.
 - Resolve Python 3.7 runtime typing compatibility blocker in `snapshot.py` to support NVDA 2023.1 runtime floor: replace PEP 604 unions (`|`) and PEP 585 builtin collection generics with standard `typing.Union`, `Optional`, `Dict`, `List`, `Mapping`, and `Iterable` constructs.
 - Add boundary casts in `sanitize_value` to resolve dynamic collection typing diagnostics under strict Pyright checks without blanket ignores.
 - Add Regression 10 to `scripts/run_tests.py` verifying AST-level and runtime compatibility for Python 3.7 (21/21 passing scenarios).

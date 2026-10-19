@@ -97,18 +97,21 @@ Eklentiyi yapılandırmak için **NVDA menüsü > Tercihler > Ayarlar > Detaylı
 
 Detaylı Öğe Bilgisi, NVDA'nın sanal belleğinin ötesine geçip sayfanın gerçek DOM'unu okumak için isteğe bağlı olarak eşlik eden bir Chrome uzantısına bağlanabilir.
 
-- Gelişmiş Destek etkinleştirildiğinde, eklenti Chrome uzantısıyla HTTP uzun yoklama (long polling) kullanarak konuşan hafif bir yerel sunucu (`127.0.0.1:63333`) başlatır.
-- Rapor daha sonra Chrome'dan alınan canlı HTML nitelikleri ve özellikleriyle bir **Aktif elementin dom öznitelikleri** bölümü içerir.
+- Gelişmiş Destek etkinleştirildiğinde eklenti, `127.0.0.1:63333` adresinde yerel bir sunucu başlatır ve Chrome uzantısından öğe verilerini ister.
+- Bridge verisi için önceden gözlemlenmiş bir üst düzey belge ve belgeye sabitlenmiş el sıkışma gerekir. Belge kimliği belirsizse, çerçeve desteklenmiyorsa veya süre dolarsa yerel NVDA bilgisi korunur.
+- Görünür etiket, dil/yön, form/grup, tablo ve bileşik araç bağlamı sınırlı olarak kaydedilir; NVDA ve DOM kaynakları ayrı tutulur. Korunan veya koruma durumu belirsiz öğelerde DOM metni, işaretleme ve bağlam alınmaz. Düzenlenebilir metin ve doğrulama iletisi yankıları dışlanır; referans özetleri toplam sekiz hedef ve 4000 karakterle sınırlıdır.
+- Yerel veri toplama kontrolleri ve bağımsız inceleme geçmiştir; insan tarafından NVDA kabul kontrolü beklemektedir. Hesaplanmış ad, görsel alternatifi, etiketteki ad, tıklama tanısı ve ihtiyatlı doğrudan metin kontrastı için yerel kontroller yazılmıştır; yapılandırılmış rapor ve dışa aktarma sunumu henüz geliştirilmektedir. Bu kontroller sayfa uygunluğu veya genel WCAG uyumu belgesi değildir.
+- Yerel geliştirme durumu için [birikimli değişiklik günlüğüne](../../../changelog.md) bakın.
 - Eşleşen GitHub sürümünden `detailedElementInfo-chrome-bridge.zip` dosyasını indirip ayıklayın. Ardından `chrome://extensions` sayfasını açın, **Geliştirici modu** seçeneğini etkinleştirin, **Paketlenmemiş öğe yükle** düğmesini seçin ve ayıklanan `Bridge` klasörünü gösterin.
 - Uzantı, eşleştirilen öğeyi inceleyebilmek için web sayfalarında çalışır. `chrome://` sayfaları gibi tarayıcının dahili sayfaları incelenemez.
-- Özellik deneyseldir ve aktif olarak geliştirilmektedir.
+- Özellik deneyseldir ve aktif olarak geliştirilmekte ve onarılmaktadır; canlı ilişkilendirme, eşleştirme sınırları ve güvenlik filtreleri sıkılaştırılmaktadır.
 
 ## Gemini ile Yapay Zeka Analizi (Deneysel)
 
 Gelişmiş Destek etkinken ve bir Gemini API anahtarı girildiğinde, öğe raporunu açıp AI analizi istemek için **Alt+F1** tuşlarına basın.
 
 - Toplanan DOM verisi yalnızca açık bir Alt+F1 isteğinden sonra Google Gemini'ye gönderilir ve Gemini, öğenin ne olduğunu, amacını ve bir ekran okuyucu kullanıcısının onunla nasıl etkileşime girebileceğini kısa ve sade bir dille açıklar.
-- Bridge, DOM verisini döndürmeden önce parola alanı değerlerini gizler; ancak diğer öğe metinleri, nitelikleri, değerleri ve işaretlemeleri dahil edilebilir. AI analizi istemeden önce odaktaki öğeyi kontrol edin.
+- Geçerli özel veri filtreleme tamamlanmamıştır. Öğe metni, nitelikler, değerler ve işaretleme gönderilebilir. Yapay zeka analizi istemeden önce yalnızca özel olmayan verileri inceleyin.
 - Bu, ayarlarda girilen kendi Google Gemini API anahtarınızı gerektirir. Özellik deneyseldir.
 
 ## Teknik Ayrıntılar
@@ -129,6 +132,12 @@ Bu eklenti **sıfır bağımlılıklı yerel bir mimari** kullanır:
 ## Yazar
 
 Mustafa Elçiçek <mustafaelcicek5656@gmail.com>
+
+## Geliştirme katkısı
+
+- Kamal Yaser
+- E-posta: [kamalyaser31@gmail.com](mailto:kamalyaser31@gmail.com)
+- Telegram: [@kamalyaser31](https://t.me/kamalyaser31)
 
 ## Lisans
 
