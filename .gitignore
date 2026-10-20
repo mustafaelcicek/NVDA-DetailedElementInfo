@@ -249,3 +249,6 @@ CLAUDE.local.md
 
 #   OpenAI Codex (AGENTS.md is tracked; local state is not)
 .codex/
+
+# Local review scratch files
+.tmp/

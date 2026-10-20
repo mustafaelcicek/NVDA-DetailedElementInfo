@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import config as nvdaConfig
+from typing import Any, Optional
 
+import config as nvdaConfig
 
 CONFIG_SECTION = "detailedElementInfo"
 
@@ -22,6 +23,10 @@ CONFIG_SPEC = {
     "showRawAttributes": "boolean(default=True)",
     "showDerivedAttributes": "boolean(default=True)",
     "showMsaaRole": "boolean(default=True)",
+    "showAriaDetails": "boolean(default=True)",
+    "showLayoutAndContrast": "boolean(default=True)",
+    "showInteractivity": "boolean(default=True)",
+    "showAccessibilityAudit": "boolean(default=True)",
     "showAncestors": "boolean(default=True)",
     "advancedSupport": "boolean(default=False)",
     "aiToken": "string(default='')",
@@ -44,6 +49,10 @@ DEFAULTS = {
     "showRawAttributes": True,
     "showDerivedAttributes": True,
     "showMsaaRole": True,
+    "showAriaDetails": True,
+    "showLayoutAndContrast": True,
+    "showInteractivity": True,
+    "showAccessibilityAudit": True,
     "showAncestors": True,
     "advancedSupport": False,
     "aiToken": "",
@@ -66,23 +75,27 @@ FIELD_OPTIONS = [
     ("showRawAttributes", "Raw IA2 attributes"),
     ("showDerivedAttributes", "Attributes derived from NVDA states"),
     ("showMsaaRole", "MSAA role"),
+    ("showAriaDetails", "Accessibility and ARIA"),
+    ("showLayoutAndContrast", "Layout and contrast"),
+    ("showInteractivity", "Interaction and DOM"),
+    ("showAccessibilityAudit", "Diagnostic checks"),
     ("showAncestors", "Ancestor elements"),
 ]
 
 
-def ensureConfigSpec():
+def ensureConfigSpec() -> None:
     """
     Register this add-on's configuration schema with NVDA.
     """
     nvdaConfig.conf.spec[CONFIG_SECTION] = CONFIG_SPEC
 
 
-def getConfig():
+def getConfig() -> Any:
     ensureConfigSpec()
     return nvdaConfig.conf[CONFIG_SECTION]
 
 
-def getBool(cfg, key, default=None):
+def getBool(cfg: Any, key: str, default: Optional[bool] = None) -> bool:
     """
     Safe boolean config reader.
 
@@ -90,15 +103,16 @@ def getBool(cfg, key, default=None):
     after an add-on update or a damaged config file.
     """
     if default is None:
-        default = DEFAULTS.get(key, True)
+        default = bool(DEFAULTS.get(key, True))
 
     try:
         return bool(cfg[key])
     except Exception:
         return bool(default)
 
-def getString(cfg, key, default=""):
+
+def getString(cfg: Any, key: str, default: str = "") -> str:
     try:
         return str(cfg[key])
     except Exception:
-        return default
+        return default

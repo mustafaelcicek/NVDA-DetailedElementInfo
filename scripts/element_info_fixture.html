@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Detailed Element Info Test Fixture</title>
+    <style>
+        .hidden-el { display: none; }
+        .invisible-el { visibility: hidden; }
+        .transparent-el { opacity: 0; }
+        .normal-box { width: 100px; height: 30px; }
+        .bold-text { font-weight: bold; font-size: 16px; color: #111111; background-color: #ffffff; }
+    </style>
+</head>
+<body>
+    <h1>Detailed Element Info Test Fixture</h1>
+
+    <!-- 1. ARIA IDREFs: Multi-token, missing IDs, and bounded resolution -->
+    <section id="sec-idrefs">
+        <h2>ARIA IDREFs & Relationships</h2>
+        <div id="target-idrefs"
+             role="region"
+             aria-labelledby="label-part1 label-part2 missing-label-id"
+             aria-describedby="desc-part1 missing-desc-id"
+             aria-details="details-el"
+             aria-errormessage="error-msg-el"
+             aria-controls="controlled-widget"
+             aria-owns="owned-child1 owned-child2">
+            Target with relations
+        </div>
+        <span id="label-part1">First Label Part</span>
+        <span id="label-part2">Second Label Part</span>
+        <p id="desc-part1">Detailed description text for the target element.</p>
+        <div id="details-el">Additional details container content.</div>
+        <div id="error-msg-el">Error: This field has an invalid entry.</div>
+        <div id="controlled-widget" role="tabpanel">Controlled tabpanel contents.</div>
+        <div id="owned-child1" role="listitem">Owned child 1</div>
+        <div id="owned-child2" role="listitem">Owned child 2</div>
+    </section>
+
+    <!-- 2. Visible Labels: Explicit for, wrapping, ambiguous, image-only -->
+    <section id="sec-labels">
+        <h2>Visible Labels</h2>
+        <div>
+            <label for="input-explicit-for">Username Field Label</label>
+            <input type="text" id="input-explicit-for" name="username">
+        </div>
+        <div>
+            <label id="wrapping-label">
+                Search Site Input
+                <input type="text" id="input-wrapping" name="search" aria-label="Search site">
+            </label>
+        </div>
+        <div>
+            <label>Ambiguous Label A</label>
+            <label>Ambiguous Label B</label>
+            <input type="text" id="input-ambiguous" name="ambiguous">
+        </div>
+        <div>
+            <button id="btn-icon-only" aria-label="Settings">
+                <svg width="16" height="16"><circle cx="8" cy="8" r="8"/></svg>
+            </button>
+        </div>
+    </section>
+
+    <!-- 3. Language & Direction Inheritance -->
+    <section id="sec-language" lang="fr" dir="ltr">
+        <h2>Language and Direction</h2>
+        <div id="lang-inherited">
+            Inherits French from parent section.
+        </div>
+        <div id="lang-explicit-empty" lang="">
+            Explicit empty lang attribute stops inheritance.
+        </div>
+        <div id="lang-arabic" lang="ar" dir="rtl">
+            نص باللغة العربية مع اتجاه من اليمين إلى اليسار
+        </div>
+    </section>
+
+    <!-- 4. Form Constraints, Browser Defaults, and Redaction -->
+    <section id="sec-form">
+        <h2>Form Controls & Validation</h2>
+        <form id="test-form" action="/submit" method="post">
+            <fieldset id="field-group-personal">
+                <legend id="legend-personal">Personal Information Group</legend>
+                <div>
+                    <label for="input-email">Email (Required, Pattern)</label>
+                    <input type="email" id="input-email" name="email" required pattern=".+@.+\..+" maxlength="50" minlength="5">
+                </div>
+                <div>
+                    <label for="input-pwd">Password Field (Sensitive)</label>
+                    <input type="password" id="input-pwd" name="password" autocomplete="current-password" value="SuperSecretPassword123">
+                </div>
+                <div>
+                    <label for="input-number">Number (Range constraints)</label>
+                    <input type="number" id="input-number" name="quantity" min="1" max="10" step="2" value="4">
+                </div>
+                <div>
+                    <label for="textarea-bio">Bio (Echo check)</label>
+                    <textarea id="textarea-bio" name="bio" maxlength="200">User entered bio text.</textarea>
+                </div>
+                <div>
+                    <input type="text" id="input-readonly" readonly value="Fixed Readonly Value">
+                    <input type="text" id="input-disabled" disabled value="Disabled Value">
+                </div>
+            </fieldset>
+        </form>
+    </section>
+
+    <!-- 5. Table Grid with Spans, Virtual Counts, and Headers -->
+    <section id="sec-table">
+        <h2>Table & Grid Coordinates</h2>
+        <table id="test-table" aria-rowcount="-1" aria-colcount="4">
+            <thead>
+                <tr>
+                    <th id="th-name" scope="col">Product Name</th>
+                    <th id="th-cat" scope="col">Category</th>
+                    <th id="th-qty" scope="col">Quantity</th>
+                    <th id="th-price" scope="col">Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr id="tr-row1">
+                    <th id="rh-prod1" scope="row">Widget Alpha</th>
+                    <td id="cell-cat1" headers="th-cat rh-prod1">Tools</td>
+                    <td id="cell-merged" headers="th-qty th-price rh-prod1" rowspan="2" colspan="2" aria-rowindex="2" aria-colindex="3" aria-rowspan="2" aria-colspan="2">
+                        Bundle Data (2x2 span)
+                    </td>
+                </tr>
+                <tr id="tr-row2">
+                    <th id="rh-prod2" scope="row">Widget Beta</th>
+                    <td id="cell-cat2" headers="th-cat rh-prod2">Supplies</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- 6. Composite Widgets & Active Descendant -->
+    <section id="sec-composite">
+        <h2>Composite Widgets</h2>
+        <div id="combobox-widget"
+             role="combobox"
+             aria-expanded="true"
+             aria-haspopup="listbox"
+             aria-controls="listbox-options"
+             aria-activedescendant="opt-2">
+            <input type="text" id="combobox-input" aria-autocomplete="list" tabindex="0">
+            <ul id="listbox-options" role="listbox" tabindex="-1">
+                <li id="opt-1" role="option" aria-selected="false">Option 1: Red</li>
+                <li id="opt-2" role="option" aria-selected="true" class="bold-text">Option 2: Green (Active)</li>
+                <li id="opt-3" role="option" aria-selected="false">Option 3: Blue</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- 7. Frames and Visibility States -->
+    <section id="sec-visibility">
+        <h2>Visibility & Viewport States</h2>
+        <div id="el-hidden" class="hidden-el">Display none element</div>
+        <div id="el-invisible" class="invisible-el">Visibility hidden element</div>
+        <div id="el-transparent" class="transparent-el">Opacity zero element</div>
+        <div id="el-inert" inert>Inert element content</div>
+        <iframe id="test-subframe" src="about:blank" title="Test Subframe"></iframe>
+    </section>
+
+<section id="review-regression-cases">
+<h2>Reviewer regression cases</h2>
+<p>These cases include deliberate accessibility defects for inspection. Expected outcomes are checked by the local browser scenario runner.</p>
+<h3>button visible label</h3>
+<button id="review-button_visible_label-x">Search</button>
+<h3>visible label</h3>
+<label for="review-visible_label-x" style="display:none">Hidden</label><label for="review-visible_label-x">Visible</label><input id="review-visible_label-x">
+<h3>multiple labels</h3>
+<label for="review-multiple_labels-x">First</label><label for="review-multiple_labels-x">Second</label><input id="review-multiple_labels-x">
+<h3>html direction</h3>
+<div dir="rtl"><span id="review-html_direction-x" dir="bogus">Text</span></div>
+<h3>fieldset disabled</h3>
+<fieldset disabled><legend><input id="review-fieldset_disabled-legend"></legend><input id="review-fieldset_disabled-x"></fieldset>
+<h3>first legend exception</h3>
+<fieldset disabled><legend><input id="review-first_legend_exception-x"></legend></fieldset>
+<h3>column spans</h3>
+<table><tr><td colspan="2">Wide</td><td id="review-column_spans-x">Cell</td></tr></table>
+<h3>header categories</h3>
+<table><tr><th id="review-header_categories-c" scope="col">Column</th><th id="review-header_categories-h" scope="row">Row</th><td id="review-header_categories-x" headers="review-header_categories-c review-header_categories-h">Cell</td></tr></table>
+<h3>virtual indices</h3>
+<div role="grid" aria-rowcount="-1"><div role="row" aria-rowindex="77"><div role="gridcell" id="review-virtual_indices-x">Cell</div></div></div>
+<h3>inert is not hidden</h3>
+<button inert id="review-inert_is_not_hidden-x">Visible</button>
+<h3>validation privacy</h3>
+<input id="review-validation_privacy-x" value="SYNTHETIC_SECRET">
+<h3>editable reference</h3>
+<span id="review-editable_reference-ref"><span contenteditable>SYNTHETIC_SECRET</span>Public</span><button id="review-editable_reference-x" aria-describedby="review-editable_reference-ref">Button</button>
+</section>
+
+<section aria-labelledby="phase3-title">
+<h2 id="phase3-title">Phase 3 bounded contrast fixtures</h2>
+<h3>contrast_black_white</h3>
+<div style="contain:paint;position:relative">
+<span id="phase3-contrast_black_white" style="color:black;background:white">Text</span>
+</div>
+<h3>contrast_identical</h3>
+<div style="contain:paint;position:relative">
+<span id="phase3-contrast_identical" style="color:white;background:white">Text</span>
+</div>
+<h3>contrast_inherited_background</h3>
+<div style="contain:paint;position:relative">
+<div style="background:white"><span id="phase3-contrast_inherited_background" style="color:black">Text</span></div>
+</div>
+<h3>contrast_unresolved_background</h3>
+<div style="contain:paint;position:relative">
+<span id="phase3-contrast_unresolved_background" style="color:black">Text</span>
+</div>
+<h3>contrast_opacity</h3>
+<div style="contain:paint;position:relative">
+<div style="opacity:.5"><span id="phase3-contrast_opacity" style="color:black;background:white">Text</span></div>
+</div>
+<h3>contrast_mixed_descendant</h3>
+<div style="contain:paint;position:relative">
+<span id="phase3-contrast_mixed_descendant" style="color:black;background:white"><b style="color:red">Text</b></span>
+</div>
+<h3>contrast_background_image</h3>
+<div style="contain:paint;position:relative">
+<span id="phase3-contrast_background_image" style="background:linear-gradient(white,black);color:black">Text</span>
+</div>
+<h3>contrast_overlay</h3>
+<div style="contain:paint;position:relative">
+<span id="phase3-contrast_overlay" style="color:black;background:white">Text</span><div style="position:fixed;inset:0;background:#ff000080;pointer-events:none"></div>
+</div>
+<h3>contrast_alpha</h3>
+<div style="contain:paint;position:relative">
+<span id="phase3-contrast_alpha" style="color:rgb(0 0 0 / .5);background:white">Text</span>
+</div>
+<h3>contrast_readonly</h3>
+<div style="contain:paint;position:relative">
+<button readonly id="phase3-contrast_readonly" style="color:white;background:white">Text</button>
+</div>
+<h3>contrast_disabled</h3>
+<div style="contain:paint;position:relative">
+<button disabled id="phase3-contrast_disabled">Text</button>
+</div>
+<h3>contrast_inert</h3>
+<div style="contain:paint;position:relative">
+<button inert id="phase3-contrast_inert" style="color:white;background:white">Text</button>
+</div>
+<h3>contrast_font_boundaries</h3>
+<div style="contain:paint;position:relative">
+<span id="phase3-contrast_font_boundaries" style="color:black;background:white;font-size:18.6666667px;font-weight:700">Text</span>
+</div>
+<h3>unassociated_neighbor_label</h3>
+<div style="contain:paint;position:relative">
+<span>Search</span><button id="phase3-unassociated_neighbor_label" aria-label="Run" style="width:2em;height:2em"></button>
+</div>
+<h3>contrast_content_visibility</h3>
+<div style="contain:paint;position:relative">
+<span id="phase3-contrast_content_visibility" style="display:inline-block;width:100px;height:30px;content-visibility:hidden;color:black;background:white">Text</span>
+</div>
+<h3>label_content_visibility</h3>
+<div style="contain:paint;position:relative">
+<button id="phase3-label_content_visibility" aria-label="Run" style="content-visibility:hidden">Search</button>
+</div>
+<h3>contrast_text_fill</h3>
+<div style="contain:paint;position:relative">
+<span id="phase3-contrast_text_fill" style="color:black;-webkit-text-fill-color:white;background:white">Text</span>
+</div>
+<h3>contrast_inset_shadow</h3>
+<div style="contain:paint;position:relative">
+<span id="phase3-contrast_inset_shadow" style="color:white;background:black;box-shadow:inset 0 0 0 100px white">Text</span>
+</div>
+<h3>contrast_generated_overlay</h3>
+<div style="contain:paint;position:relative">
+<style>#phase3-overlay::before{content:"";position:fixed;inset:0;background:red}</style><span id="phase3-contrast_generated_overlay" style="color:black;background:white">Text</span><div id="phase3-overlay"></div>
+</div>
+</section>
+
+</body>
+</html>

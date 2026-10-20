@@ -5,7 +5,6 @@ import gui
 
 from .config import FIELD_OPTIONS, getConfig, getBool, getString
 
-
 FIELD_LABELS = {
     "showTagSummary": _("Tag summary"),
     "showAccessibleName": _("Accessible name"),
@@ -22,6 +21,10 @@ FIELD_LABELS = {
     "showRawAttributes": _("Raw IA2 attributes"),
     "showDerivedAttributes": _("Attributes derived from NVDA states"),
     "showMsaaRole": _("MSAA role"),
+    "showAriaDetails": _("Accessibility and ARIA"),
+    "showLayoutAndContrast": _("Layout and contrast"),
+    "showInteractivity": _("Interaction and DOM"),
+    "showAccessibilityAudit": _("Diagnostic checks"),
     "showAncestors": _("Ancestor elements"),
 }
 
@@ -83,7 +86,7 @@ class DetailedElementInfoSettingsPanel(gui.settingsDialogs.SettingsPanel):
 
         tokenSizer = wx.BoxSizer(wx.HORIZONTAL)
         tokenLabel = wx.StaticText(self, label=_("Gemini API key:"))
-        self.aiTokenTextCtrl = wx.TextCtrl(self)
+        self.aiTokenTextCtrl = wx.TextCtrl(self, name=_("Gemini API key"))
         tokenSizer.Add(tokenLabel, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
         tokenSizer.Add(self.aiTokenTextCtrl, 1, wx.ALL | wx.EXPAND, 5)
         advancedHelper.addItem(tokenSizer)
@@ -124,6 +127,12 @@ class DetailedElementInfoSettingsPanel(gui.settingsDialogs.SettingsPanel):
         cfg["advancedSupport"] = self.advancedSupportCheckBox.GetValue()
         cfg["aiToken"] = self.aiTokenTextCtrl.GetValue()
 
+        from . import server
+
+        if cfg["advancedSupport"]:
+            server.start_server_in_background()
+        else:
+            server.stop_server()
 
     def _onSelectAll(self, evt):
         for key, _label in FIELD_OPTIONS:
