@@ -10,7 +10,7 @@
 
 **Spec:** This document incorporates the 2026-10-18 review; repository constraints are in [AGENTS.md](AGENTS.md), [CLAUDE.md](CLAUDE.md), and [CONTRIBUTING.md](CONTRIBUTING.md).
 
-**Status:** Approved Phases 0-6 code and documentation are written; Phase 7 local checks pass (64 default scenarios, 37 actual Chrome cases, Node, touched-file lint and SCons build). Independent review closed the evidenced implementation findings. Full configured Pyright remains unresolved at 1872 errors. Human NVDA acceptance is not_started and blocks release/ready-for-PR status; see project_state.md.
+**Status:** Approved Phases 0-6 code and documentation are written; Phase 7 local checks pass (64 default scenarios, 37 actual Chrome cases, Node, touched-file lint and SCons build). Independent review closed the evidenced implementation findings. Full configured Pyright remains unresolved at 1872 errors. On 2026-10-20 the user reported all supplied manual steps work; NVDA 2025.3 is reported; the browser wording is "chrom obov 155" and its exact build remains unclear. Full supported-version coverage remains unrecorded. Full Pyright findings remain unresolved; see project_state.md.
 
 ## Global Constraints
 

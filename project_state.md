@@ -1,8 +1,8 @@
 # Project State
-Updated: 2026-10-19
+Updated: 2026-10-20
 
 ## Delivery checkpoint
-Code for approved Phases 0-6 is written and locally verified. Phase 7 local checks and package build have recorded outcomes; human NVDA acceptance is not_started and blocks release/ready-for-PR status. No NVDA launch, Google request, push or PR occurred. The separate focus/live-announcement extension remains deferred.
+Code for approved Phases 0-6 is written and locally verified. Phase 7 local checks and package build have recorded outcomes; the human reported that all steps in the supplied manual procedure work on 2026-10-20. The user identified NVDA 2025.3 and reported the browser as "chrom obov 155"; preserve that wording because the exact Chrome build is unclear. This does not establish the full supported-version matrix. No agent NVDA launch, agent Google request, push or PR occurred. The separate focus/live-announcement extension remains deferred.
 
 The human chose direct root repair after two Antigravity deliveries failed review. Root owns the repairs; independent read-only review closed the Bridge/audit/report/AI findings and the final Chrome-window eligibility defect. Native milestone e928a6d and Bridge/audit milestone b4409b1 precede the final local changes on feat/expanded-element-info.
 
@@ -28,8 +28,10 @@ The human chose direct root repair after two Antigravity deliveries failed revie
 - Full configured Pyright: 1872 errors over 13 analyzed files; unresolved (original baseline 726, Phase 3 checkpoint 1816). These are not all baseline or missing NVDA stubs. Do not claim full type-check success.
 - SCons produces detailedElementInfo-1.1.0.nvda-addon. Package/source byte parity and developer-tool exclusions pass. SHA256: 5ecd6dfcf21be888689095f6c434395806d9b35f499c80ff8eb8e5da94433866. Package generation is not NVDA runtime acceptance.
 
-## Human acceptance still required
-Record NVDA version, Windows/browser versions and architecture. Exercise supported NVDA 2023.1, an intervening version and 2026.1 where available: native settings and labels/Tab order; report headings; report A after B and clipboard; Chrome Bridge focus/window switching, navigation, duplicate IDs, frames, deadlines and rapid capture; Firefox/native-only and available non-IA2 contexts; protected/empty values and unknown audit evidence; explicit AI locale/privacy/error behavior. Confirm no broadened disclosure or local-operation network dependency. Do not launch these from agent checks.
+## Human feedback and remaining acceptance evidence
+On 2026-10-20 the user reported "كله يعمل" after receiving the installation/native report, Markdown/report identity, Chrome Bridge/fixture and optional Gemini procedure. Record this as a broad user-reported pass, without inventing per-case observations, product versions or a multi-version result. Environment supplied by the user: NVDA 2025.3; browser wording "chrom obov 155" (Chrome version/build not unambiguously specified). Windows version and architecture were not supplied.
+
+Remaining environment details: Windows version, exact Chrome version/build and architecture. Exercise supported NVDA 2023.1, an intervening version and 2026.1 where available: native settings and labels/Tab order; report headings; report A after B and clipboard; Chrome Bridge focus/window switching, navigation, duplicate IDs, frames, deadlines and rapid capture; Firefox/native-only and available non-IA2 contexts; protected/empty values and unknown audit evidence; explicit AI locale/privacy/error behavior. Confirm no broadened disclosure or local-operation network dependency. Do not launch these from agent checks.
 
 ## Next step
-Human acceptance and resolution or maintainer disposition of full Pyright findings precede a release recommendation. Supply a PR draft only after the required human evidence; never open/push it. No further feature implementation is authorized for the deferred observation extension.
+Record any remaining human environment details and acceptance coverage; resolution or maintainer disposition of full Pyright findings still precedes a release recommendation. Supply a PR draft only after the required human evidence; never open/push it. No further feature implementation is authorized for the deferred observation extension.
